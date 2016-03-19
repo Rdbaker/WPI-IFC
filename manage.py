@@ -5,6 +5,7 @@ import os
 from glob import glob
 from subprocess import call
 
+from flask.ext.sqlalchemy import sqlalchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
@@ -17,6 +18,8 @@ from ifc.user.models import User
 CONFIG = ProdConfig if os.environ.get('IFC_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
 TEST_PATH = os.path.join(HERE, 'tests')
+CREATE_DB = 'create database %s'
+DEFAULT_DB = 'postgres'
 
 app = create_app(CONFIG)
 manager = Manager(app)
@@ -64,6 +67,20 @@ class Lint(Command):
         if fix_imports:
             execute_tool('Fixing import order', 'isort', '-rc')
         execute_tool('Checking code style', 'flake8')
+
+
+@manager.command
+def setup_db():
+    """Set up the local and test databases."""
+    (base_uri, local_db) = app.config['SQLALCHEMY_DATABASE_URI'].rsplit('/', 1)
+    engine = sqlalchemy.create_engine('/'.join([base_uri, DEFAULT_DB]))
+    conn = engine.connect()
+    conn.execute('commit')
+    conn.execute(CREATE_DB % local_db)
+    conn.execute('commit')
+    test_db = local_db + '_test'
+    conn.execute(CREATE_DB % test_db)
+    conn.close()
 
 
 manager.add_command('server', Server(port=5050))

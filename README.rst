@@ -32,8 +32,8 @@ Once you have installed your DBMS, run the following to create your app's databa
 
 ::
 
-    python manage.py db init
-    python manage.py db migrate
+    createuser -s -W wpiifc # give it the password: "wpiifc123"
+    python manage.py setup_db
     python manage.py db upgrade
     python manage.py server
 
