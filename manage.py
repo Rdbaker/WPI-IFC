@@ -53,7 +53,8 @@ class Lint(Command):
         """Run command."""
         skip = ['requirements']
         root_files = glob('*.py')
-        root_directories = [name for name in next(os.walk('.'))[1] if not name.startswith('.')]
+        root_directories = [name for name in next(os.walk('.'))[1] if
+                            not name.startswith('.') and not name.startswith('migrations')]
         files_and_directories = [arg for arg in root_files + root_directories if arg not in skip]
 
         def execute_tool(description, *args):

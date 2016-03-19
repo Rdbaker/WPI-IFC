@@ -43,6 +43,11 @@ class TestConfig(Config):
 
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://{}:{}@{}:{}/{}'.format('wpiifc', 'wpiifc123', 'localhost', '5432', 'wpiifc_test')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://{}:{}@{}:{}/{}'\
+                                                                .format('wpiifc',
+                                                                        'wpiifc123',
+                                                                        'localhost',
+                                                                        '5432',
+                                                                        'wpiifc_test')
     BCRYPT_LOG_ROUNDS = 4  # For faster tests; needs at least 4 to avoid "ValueError: Invalid rounds"
     WTF_CSRF_ENABLED = False  # Allows form testing
