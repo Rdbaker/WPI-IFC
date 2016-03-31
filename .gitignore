@@ -48,3 +48,4 @@ env/
 # test cache
 tests/.cache
 *.log
+.vagrant/
