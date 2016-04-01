@@ -13,7 +13,7 @@ from flask_script.commands import Clean, ShowUrls
 from ifc.app import create_app
 from ifc.database import db
 from ifc.settings import DevConfig, ProdConfig
-from ifc.user.models import User
+from ifc.user.models import User, Role
 
 CONFIG = ProdConfig if os.environ.get('IFC_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -71,6 +71,14 @@ class Lint(Command):
 
 
 @manager.command
+def seed_db():
+    """Seed the database with the initial data"""
+    Role.create(title='normal')
+    Role.create(title='ifc_admin')
+    Role.create(title='chapter_admin')
+
+
+@manager.command
 def setup_db():
     """Set up the local and test databases."""
     (base_uri, local_db) = app.config['SQLALCHEMY_DATABASE_URI'].rsplit('/', 1)
@@ -84,7 +92,7 @@ def setup_db():
     conn.close()
 
 
-manager.add_command('server', Server(host="0.0.0.0", port=5050))
+manager.add_command('server', Server(port=5050))
 manager.add_command('shell', Shell(make_context=_make_context))
 manager.add_command('db', MigrateCommand)
 manager.add_command('urls', ShowUrls())
