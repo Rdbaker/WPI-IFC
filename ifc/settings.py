@@ -15,7 +15,7 @@ class Config(object):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format('wpiifc', 'wpiifc123', 'localhost', '5432', 'wpiifc')
+    SQLALCHEMY_DATABASE_URI = 'postgresql://{}@{}:{}/{}'.format('vagrant', 'localhost', '5432', 'wpiifc')
 
 
 class ProdConfig(Config):
