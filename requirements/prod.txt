@@ -42,3 +42,5 @@ Flask-DebugToolbar==0.10.0
 
 # for heroku!
 cffi==1.5.2
+
+Flask-Admin==1.4.0

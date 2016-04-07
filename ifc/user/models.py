@@ -24,7 +24,8 @@ class Role(SurrogatePK, Model):
 
     @validates('title')
     def validate_title(self, key, title):
-        assert title in ['ifc_admin', 'chapter_admin', 'normal'], "Invalid role title"
+        """Validate the title of the role."""
+        assert title in ['ifc_admin', 'chapter_admin', 'normal'], 'Invalid role title'
         return title
 
 
@@ -66,7 +67,7 @@ class User(UserMixin, SurrogatePK, Model):
 
     @property
     def email(self):
-        """User email derived from username"""
+        """User email derived from username."""
         return '{0}@wpi.edu'.format(self.username)
 
     def __repr__(self):

@@ -13,7 +13,7 @@ from flask_script.commands import Clean, ShowUrls
 from ifc.app import create_app
 from ifc.database import db
 from ifc.settings import DevConfig, ProdConfig
-from ifc.user.models import User, Role
+from ifc.user.models import Role, User
 
 CONFIG = ProdConfig if os.environ.get('IFC_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -72,7 +72,7 @@ class Lint(Command):
 
 @manager.command
 def seed_db():
-    """Seed the database with the initial data"""
+    """Seed the database with the initial data."""
     Role.create(title='normal')
     Role.create(title='ifc_admin')
     Role.create(title='chapter_admin')
