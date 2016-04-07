@@ -78,7 +78,6 @@ class TestRegistering:
         # Fills out the form
         form = res.forms['registerForm']
         form['username'] = 'foobar'
-        form['email'] = 'foo@bar.com'
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         # Submits
@@ -94,7 +93,6 @@ class TestRegistering:
         # Fills out form, but passwords don't match
         form = res.forms['registerForm']
         form['username'] = 'foobar'
-        form['email'] = 'foo@bar.com'
         form['password'] = 'secret'
         form['confirm'] = 'secrets'
         # Submits
@@ -111,7 +109,6 @@ class TestRegistering:
         # Fills out form, but username is already registered
         form = res.forms['registerForm']
         form['username'] = user.username
-        form['email'] = 'foo@bar.com'
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         # Submits
