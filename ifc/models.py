@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """The module containing all models in the app"""
-from flask import redirect, url_for
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from werkzeug.exceptions import Unauthorized
