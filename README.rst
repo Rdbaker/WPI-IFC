@@ -1,6 +1,7 @@
 ===============================
 WPI IFC
 ===============================
+[![Build Status](https://travis-ci.org/Rdbaker/WPI-IFC.svg?branch=master)](https://travis-ci.org/Rdbaker/WPI-IFC)
 
 The website that powers WPI's IFC's online platform.
 
