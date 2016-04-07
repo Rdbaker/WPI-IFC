@@ -70,6 +70,16 @@ class User(UserMixin, SurrogatePK, Model):
         """User email derived from username."""
         return '{0}@wpi.edu'.format(self.username)
 
+    @property
+    def is_site_admin(self):
+        """True if the user is a site admin."""
+        return self.role.title == 'ifc_admin'
+
+    @property
+    def is_chapter_admin(self):
+        """True if the user is a chapter admin."""
+        return self.role.title == 'chapter_admin'
+
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<User({username})>'.format(username=self.username)
