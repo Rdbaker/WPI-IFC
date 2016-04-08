@@ -5,6 +5,7 @@ from sqlalchemy.orm import validates
 
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
 from ifc.extensions import bcrypt
+from ifc.party.models import Fraternity
 
 
 class Role(SurrogatePK, Model):
@@ -42,6 +43,9 @@ class User(UserMixin, SurrogatePK, Model):
     is_admin = Column(db.Boolean(), default=False)
     role_id = reference_col('roles', nullable=False)
     role = relationship('Role')
+
+    fraternity_id = reference_col('fraternities', nullable=False) #Use Fraternity db table name.
+    fraternity = relationship('Fraternity') #Use Fraternity Class-Name
 
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
