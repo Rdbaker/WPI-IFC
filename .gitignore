@@ -52,3 +52,5 @@ tests/.cache
 .vagrant
 
 ifc/static/libs
+ifc/static/js/compiled
+node_modules
