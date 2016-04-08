@@ -45,7 +45,7 @@ class User(UserMixin, SurrogatePK, Model):
 
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
-        role = Role.query.filter(Role.title == 'normal').first()
+        role = self.resolve_role_from_username(username)
         db.Model.__init__(self, username=username, role=role, **kwargs)
         if password:
             self.set_password(password)
@@ -59,6 +59,11 @@ class User(UserMixin, SurrogatePK, Model):
     def check_password(self, value):
         """Check password."""
         return bcrypt.check_password_hash(self.password, value)
+
+    def resolve_role_from_username(self, username):
+        """Figures out what the role is from the username."""
+        # do something about resolving this here
+        return Role.query.filter(Role.title == 'ifc_admin').first()
 
     @property
     def full_name(self):
