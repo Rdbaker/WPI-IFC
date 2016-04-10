@@ -1,3 +1,6 @@
+.. image:: https://badge.waffle.io/Rdbaker/WPI-IFC.png?label=ready&title=Ready 
+ :target: https://waffle.io/Rdbaker/WPI-IFC
+ :alt: 'Stories in Ready'
 ===============================
 WPI IFC
 ===============================
