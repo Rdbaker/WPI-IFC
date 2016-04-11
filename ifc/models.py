@@ -5,6 +5,7 @@ from flask_login import current_user
 from werkzeug.exceptions import Unauthorized
 
 from ifc.user.models import Role, User
+from ifc.party.models import Fraternity
 
 
 class UserModelView(ModelView):

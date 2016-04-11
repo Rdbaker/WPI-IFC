@@ -44,8 +44,8 @@ class User(UserMixin, SurrogatePK, Model):
     role_id = reference_col('roles', nullable=False)
     role = relationship('Role')
 
-    fraternity_id = reference_col('fraternities', nullable=False) #Use Fraternity db table name.
-    fraternity = relationship('Fraternity') #Use Fraternity Class-Name
+    fraternity_id = reference_col('fraternities', nullable=False)
+    fraternity = relationship('Fraternity')
 
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""

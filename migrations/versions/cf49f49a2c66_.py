@@ -1,4 +1,4 @@
-"""Created a Fraternity Table
+"""Creates the Fraternity Table
 
 Revision ID: cf49f49a2c66
 Revises: 7cc0f8aca352

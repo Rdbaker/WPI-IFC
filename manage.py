@@ -6,14 +6,16 @@ from glob import glob
 from subprocess import call
 
 from flask.ext.sqlalchemy import sqlalchemy
+from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Command, Manager, Option, Server, Shell
 from flask_script.commands import Clean, ShowUrls
 
+import ifc.models as models
 from ifc.app import create_app
 from ifc.database import db
 from ifc.settings import DevConfig, ProdConfig
-from ifc.user.models import Role, User
+from seeds import FRATERNITIES, ROLES
 
 CONFIG = ProdConfig if os.environ.get('IFC_ENV') == 'prod' else DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -28,7 +30,7 @@ migrate = Migrate(app, db)
 
 def _make_context():
     """Return context dict for a shell session so you can access app, db, and the User model by default."""
-    return {'app': app, 'db': db, 'User': User}
+    return {'app': app, 'db': db, 'models': models}
 
 
 @manager.command
@@ -72,10 +74,21 @@ class Lint(Command):
 
 @manager.command
 def seed_db():
-    """Seed the database with the initial data."""
-    Role.create(title='normal')
-    Role.create(title='ifc_admin')
-    Role.create(title='chapter_admin')
+    """Seed the database with the initial data, this should only be run once per computer."""
+    for role in ROLES:
+        try:
+            models.Role.create(**role)
+            print "Role: " + role['title'] + " successfully created"
+        except IntegrityError:
+            db.session().rollback()
+            print "Role: " + role['title'] + " already exists"
+    for frat in FRATERNITIES:
+        try:
+            models.Fraternity.create(**frat)
+            print "Fraternity: " + frat['title'] + " successfully created"
+        except IntegrityError:
+            db.session().rollback()
+            print "Fraternity: " + frat['title'] + " already exists"
 
 
 @manager.command
