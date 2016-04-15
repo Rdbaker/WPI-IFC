@@ -1,8 +1,7 @@
-
 {% extends "layout.html" %}
 {% block content %}
-    <h1>Welcome, {{ current_user.first_name + ' ' + current_user.last_name }}</h1>
-    <h3>This is the members-only page.</h3>
+    <h1>Welcome {{ session.username }}</h1>
+    <h3>This is the site-admin-only page.</h3>
 {% endblock %}
 
 {% block js %}

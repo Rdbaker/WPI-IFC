@@ -4,6 +4,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from werkzeug.exceptions import Unauthorized
 
+from ifc.admin.models import Preuser
 from ifc.user.models import Role, User
 from ifc.party.models import Fraternity
 

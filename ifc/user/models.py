@@ -2,9 +2,11 @@
 """User models."""
 from flask_login import UserMixin
 from sqlalchemy.orm import validates
+from werkzeug.exceptions import Forbidden
 
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
 from ifc.extensions import bcrypt
+from ifc.admin.models import Preuser
 from ifc.party.models import Fraternity
 
 
@@ -49,12 +51,25 @@ class User(UserMixin, SurrogatePK, Model):
 
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
-        role = self.resolve_role_from_username(username)
-        db.Model.__init__(self, username=username, role=role, **kwargs)
+        pre = Preuser.query.filter(Preuser.username == username).first()
+        if pre is None:
+            raise Forbidden()
+        role = self.resolve_role_from_preuser(pre)
+        fraternity = self.resolve_frat_from_preuser(pre)
+
+        # create the user
+        db.Model.__init__(
+            self,
+            username=username,
+            role=role,
+            fraternity=fraternity,
+            first_name=pre.first_name,
+            last_name=pre.last_name)
         if password:
             self.set_password(password)
         else:
             self.password = None
+        self.active = True
 
     def set_password(self, password):
         """Set password."""
@@ -64,10 +79,18 @@ class User(UserMixin, SurrogatePK, Model):
         """Check password."""
         return bcrypt.check_password_hash(self.password, value)
 
-    def resolve_role_from_username(self, username):
-        """Figures out what the role is from the username."""
-        # do something about resolving this here
-        return Role.query.filter(Role.title == 'ifc_admin').first()
+    def resolve_role_from_preuser(self, pre):
+        """Figures out what the role is from the preregistered-user model."""
+        if pre.ifc_admin:
+            return Role.query.filter(Role.title == 'ifc_admin').first()
+        elif pre.chapter_admin:
+            return Role.query.filter(Role.title == 'chapter_admin').first()
+        else:
+            return Role.query.filter(Role.title == 'normal').first()
+
+    def resolve_frat_from_preuser(self, pre):
+        """Figures out what the fraternity is from the preregistered-user model."""
+        return Fraternity.query.filter(Fraternity.title == pre.fraternity_name).first()
 
     @property
     def full_name(self):

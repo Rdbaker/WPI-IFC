@@ -20,8 +20,7 @@ js = Bundle(
 )
 
 guest_list_js = Bundle(
-    'js/guest_list.coffee',
-    filters=['coffeescript', 'jsmin'],
+    'js/guest_list.js',
     output='public/js/compiled/guest_list.js'
 )
 

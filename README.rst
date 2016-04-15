@@ -1,4 +1,4 @@
-.. image:: https://badge.waffle.io/Rdbaker/WPI-IFC.png?label=ready&title=Ready 
+.. image:: https://badge.waffle.io/Rdbaker/WPI-IFC.png?label=ready&title=Ready
  :target: https://waffle.io/Rdbaker/WPI-IFC
  :alt: 'Stories in Ready'
 ===============================
@@ -7,6 +7,10 @@ WPI IFC
 [![Build Status](https://travis-ci.org/Rdbaker/WPI-IFC.svg?branch=master)](https://travis-ci.org/Rdbaker/WPI-IFC)
 
 The website that powers WPI's IFC's online platform.
+
+IMPORTANT
+---------
+If you're deploying to the heroku server, please see the bottom of this for extra steps
 
 
 Quickstart
@@ -83,3 +87,12 @@ This will generate a new migration script. Then run:
 To apply the migration.
 
 For a full migration command reference, run ``python manage.py db --help``.
+
+
+Deployments
+-----------
+
+After deploying to heroku, make sure that any database migrations are properly run:
+::
+
+    heroku run python manage.py db upgrade
