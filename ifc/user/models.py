@@ -49,6 +49,8 @@ class User(UserMixin, SurrogatePK, Model):
     fraternity_id = reference_col('fraternities', nullable=False)
     fraternity = relationship('Fraternity')
 
+    parties = relationship('Party')
+
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""
         pre = Preuser.query.filter(Preuser.username == username).first()
@@ -111,6 +113,16 @@ class User(UserMixin, SurrogatePK, Model):
     def is_chapter_admin(self):
         """True if the user is a chapter admin."""
         return self.role.title == 'chapter_admin'
+
+    @property
+    def can_delete_party(self):
+        """True if the user can delete a party."""
+        return self.is_site_admin or self.is_chapter_admin
+
+    @property
+    def can_create_party(self):
+        """True if the user can create a party."""
+        return self.is_site_admin or self.is_chapter_admin
 
     def __repr__(self):
         """Represent instance as a unique string."""

@@ -6,7 +6,7 @@ from werkzeug.exceptions import Unauthorized
 
 from ifc.admin.models import Preuser
 from ifc.user.models import Role, User
-from ifc.party.models import Fraternity
+from ifc.party.models import Fraternity, Party
 
 
 class UserModelView(ModelView):

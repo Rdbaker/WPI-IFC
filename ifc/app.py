@@ -4,7 +4,7 @@ from flask import Flask, render_template
 from flask_admin import Admin
 
 import ifc.models as models
-from ifc import public, user
+from ifc import public, user, party, admin
 from ifc.assets import assets
 from ifc.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
 from ifc.settings import ProdConfig
@@ -41,6 +41,8 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
+    app.register_blueprint(admin.views.blueprint)
+    app.register_blueprint(party.views.blueprint)
     return None
 
 

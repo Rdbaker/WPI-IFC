@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 class="title">{{ current_user.fraternity.title }}'s Parties</h1>
+    <div class="container-fluid">
+      <div class="btn btn-success">
+        <i class="fa fa-icon fa-plus"></i>
+        New Party
+      </div>
+    </div>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          {% if current_user.can_delete_party %}
+            <th class="col-xs-5"> Party Name </th>
+            <th class="col-xs-2"> Date </th>
+            <th class="col-xs-2"> Party Jobs </th>
+            <th class="col-xs-2"> Guest List </th>
+            <th class="col-xs-1"> Delete </th>
+          {% else %}
+            <th class="col-xs-6"> Party Name </th>
+            <th class="col-xs-2"> Date </th>
+            <th class="col-xs-2"> Party Jobs </th>
+            <th class="col-xs-2"> Guest List </th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for party in parties %}
+          <tr>
+            <td> {{ party.name }} </td>
+            <td> {{ party.date }} </td>
+            <td> party jobs here </td>
+            <td> guest list button here</td>
+            {% if current_user.can_delete_party %}
+              <td> delete button here</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}
