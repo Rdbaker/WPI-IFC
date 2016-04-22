@@ -1,4 +1,9 @@
 {% extends "layout.html" %}
+{% block css %}
+  {% assets "guest_list_css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+{% endblock %}
 {% block content %}
   <h1 class="text-center">{{ party.fraternity.title }}'s Party</h1>
   <h2 class="text-center">{{ party.name }} - {{ party.date.__format__('%A, %B %d, %Y') }}</h2>
@@ -6,7 +11,7 @@
     <div class="row text-center" id="message">
     </div>
     <div class="row" id="search-row">
-      <div class="col-xs-7">
+      <div class="col-xs-7 col-xs-offset-2">
         <input type="text" id="guest-search" class="form-control" placeholder="Search by brother name or guest name">
       </div>
       <div class="col-xs-3">
@@ -14,15 +19,15 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-6 col-md-6">
-        <h4>Men</h4>
+      <div class="col-xs-5 col-md-5 col-xs-offset-1 guest-entry-row">
+        <h4 class="add-guest-header">Men</h4>
         <div id="add-male" class="form-group form-inline">
           <input type="text" class="form-control enter-user-name" id="add-male-name" placeholder="Add Male Guest">
           <button class="btn btn-info add-user-btn" id="add-male-btn"><i class="fa fa-icon fa-plus"></i></button>
         </div>
       </div>
-      <div class="col-xs-6 col-md-6">
-        <h4>Women</h4>
+      <div class="col-xs-5 col-md-5 col-xs-offset-1 guest-entry-row">
+        <h4 class="add-guest-header">Women</h4>
         <div id="add-female" class="form-group form-inline">
           <input type="text" class="form-control enter-user-name" id="add-female-name" placeholder="Add Female Guest">
           <button class="btn btn-info add-user-btn" id="add-female-btn"><i class="fa fa-icon fa-plus"></i></button>

@@ -2,3 +2,58 @@
   margin-top: 25px;
   margin-bottom: 30px;
 }
+
+.add-guest-header {
+  margin-bottom: 25px;
+}
+
+.guest-entry-row {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.guest {
+  border: 2px solid #676767;
+  border-radius: 3px;
+  font-weight: 500;
+  color: white;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.male-guest {
+  background-color: #72a4d8;
+}
+
+.female-guest {
+  background-color: #d8728e;
+}
+
+.male-guest:hover {
+  background-color: #6a98c7;
+}
+
+.female-guest:hover {
+  background-color: #ce6a86;
+}
+
+.guest-name {
+  font-size: 16px;
+}
+
+.guest-name > .btn-danger {
+  float: right;
+}
+
+.guest > .text-muted {
+  color: #dcdcdc;
+  padding-left: 10px;
+}
+
+@media (max-width: 500px) {
+  .add-user-btn {
+    padding-right: 45px;
+    padding-left: 45px;
+  }
+}
