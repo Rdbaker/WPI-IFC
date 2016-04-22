@@ -2,10 +2,12 @@
 {% block content %}
     <h1 class="title">{{ current_user.fraternity.title }}'s Parties</h1>
     <div class="container-fluid">
-      <div class="btn btn-success">
-        <i class="fa fa-icon fa-plus"></i>
-        New Party
-      </div>
+      <a href={{ url_for('party.newparty') }}>
+        <div class="btn btn-success">
+          <i class="fa fa-icon fa-plus"></i>
+          New Party
+        </div>
+      </a>
     </div>
     <table class="table table-hover">
       <thead>
@@ -28,11 +30,21 @@
         {% for party in parties %}
           <tr>
             <td> {{ party.name }} </td>
-            <td> {{ party.date }} </td>
+            <td> {{ party.date.__format__('%A, %B %d, %Y') }} </td>
             <td> party jobs here </td>
-            <td> guest list button here</td>
+            <td>
+              <a href={{ url_for('party.guest_list', id=party.id) }}>
+                <div class="btn btn-info btn-sm">
+                  Guests
+                </div>
+              </a>
+            </td>
             {% if current_user.can_delete_party %}
-              <td> delete button here</td>
+              <td>
+                <form action={{ url_for('party.delete_party', id=party.id) }} method="post">
+                  <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+              </td>
             {% endif %}
           </tr>
         {% endfor %}

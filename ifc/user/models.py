@@ -114,16 +114,24 @@ class User(UserMixin, SurrogatePK, Model):
         """True if the user is a chapter admin."""
         return self.role.title == 'chapter_admin'
 
-    @property
-    def can_delete_party(self):
-        """True if the user can delete a party."""
-        return self.is_site_admin or self.is_chapter_admin
+    def can_delete_party(self, party):
+        """True if the user can delete the given party."""
+        return self.is_site_admin or (self.is_chapter_admin and self.fraternity == party.fraternity)
 
     @property
     def can_create_party(self):
         """True if the user can create a party."""
         return self.is_site_admin or self.is_chapter_admin
 
+    def can_view_party(self, party):
+        """True if the user can view the guest list of a party"""
+        return self.is_site_admin or party.fraternity == self.fraternity
+
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<User({username})>'.format(username=self.username)
+
+    @property
+    def json_dict(self):
+        """Represent the instance as a dict that can be converted to JSON."""
+        return {'username': self.username, 'first_name': self.first_name, 'last_name': self.last_name, 'full_name': self.full_name, 'id': self.id}

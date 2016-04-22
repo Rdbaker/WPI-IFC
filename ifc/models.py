@@ -6,7 +6,7 @@ from werkzeug.exceptions import Unauthorized
 
 from ifc.admin.models import Preuser
 from ifc.user.models import Role, User
-from ifc.party.models import Fraternity, Party
+from ifc.party.models import Fraternity, Party, Guest
 
 
 class UserModelView(ModelView):
@@ -21,6 +21,7 @@ class UserModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         """Throws the user to a 401 page if they shouldn't be here."""
         raise Unauthorized()
+
 
 class RoleModelView(ModelView):
     can_delete = False

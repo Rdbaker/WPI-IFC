@@ -6,7 +6,7 @@ css = Bundle(
     'libs/bootstrap/dist/css/bootstrap.css',
     'css/style.css',
     filters='cssmin',
-    output='public/css/common.css'
+    output='public/css/compiled/common.css'
 )
 
 js = Bundle(
@@ -14,14 +14,23 @@ js = Bundle(
     'libs/backbone/backbone.js',
     'libs/jQuery/dist/jquery.js',
     'libs/bootstrap/dist/js/bootstrap.js',
-    'js/plugins.js',
     filters='jsmin',
-    output='public/js/common.js'
+    output='public/js/compiled/common.js'
 )
 
 guest_list_js = Bundle(
-    'js/guest_list.js',
+    'js/party/guest_list.js',
+    'js/party/guest_list_view.js',
+    'js/party/add_guest_view.js',
+    'js/party/guest.js',
+    'js/party/guest_view.js',
+    'js/party/guest_collection.js',
     output='public/js/compiled/guest_list.js'
+)
+
+guest_list_css = Bundle(
+    'css/party.css',
+    output='public/css/compiled/party.css'
 )
 
 
@@ -31,3 +40,4 @@ assets = Environment()
 assets.register('js_all', js)
 assets.register('guest_list_js', guest_list_js)
 assets.register('css_all', css)
+assets.register('guest_list_css', guest_list_css)

@@ -63,6 +63,10 @@ class SurrogatePK(object):
             return cls.query.get(int(record_id))
         return None
 
+    @classmethod
+    def find_by_id(cls, record_id):
+        return cls.get_by_id(record_id)
+
 
 def reference_col(tablename, nullable=False, pk_name='id', **kwargs):
     """Column that adds primary key foreign key reference.
