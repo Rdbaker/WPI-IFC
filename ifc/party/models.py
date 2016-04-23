@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Party models."""
-from enum import Enum
 from sqlalchemy.orm import validates
 
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
