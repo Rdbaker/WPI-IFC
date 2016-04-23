@@ -33,19 +33,19 @@ $(function() {
   };
 
   Broadcaster.prototype.flashError = function(message) {
-    this.flashMessage('danger', message);
+    this.flashMessage('bg-danger', message);
   };
 
   Broadcaster.prototype.flashSuccess = function(message) {
-    this.flashMessage('success', message);
+    this.flashMessage('bg-success', message);
   };
 
   Broadcaster.prototype.flashInfo = function(message) {
-    this.flashMessage('info', message);
+    this.flashMessage('bg-info', message);
   };
 
   Broadcaster.prototype.flashWarning = function(message) {
-    this.flashMessage('warning', message);
+    this.flashMessage('bg-warning', message);
   };
 
   window.Broadcaster = new Broadcaster;

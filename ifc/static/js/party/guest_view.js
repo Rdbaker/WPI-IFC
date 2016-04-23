@@ -37,6 +37,14 @@
     destroy: function() {
       this.remove();
       delete this;
+    },
+
+    search: function(re) {
+      if(this.model.filter(re)) {
+        this.$el.removeClass("hidden");
+      } else {
+        this.$el.addClass("hidden");
+      }
     }
   });
 })();

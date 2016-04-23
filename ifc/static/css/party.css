@@ -51,9 +51,17 @@
   padding-left: 10px;
 }
 
-@media (max-width: 500px) {
+@media (max-width: @screen-sm-max) {
   .add-user-btn {
     padding-right: 45px;
     padding-left: 45px;
   }
+}
+
+#message {
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+  height: 50px;
+  line-height: 3.2;
 }
