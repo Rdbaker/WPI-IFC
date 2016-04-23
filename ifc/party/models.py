@@ -13,7 +13,7 @@ class Fraternity(SurrogatePK, Model):
     title = Column(db.String(80), unique=True, nullable=False)
     capacity = Column(db.Integer(), nullable=False)
     users = relationship('User')
-    parties = relationship('Party')
+    parties = relationship('Party', cascade='delete', single_parent=True)
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -32,11 +32,12 @@ class Party(SurrogatePK, Model):
     __tablename__ = 'parties'
     name = Column(db.String(80), nullable=False)
     date = Column(db.Date(), nullable=False)
+    started = Column(db.Boolean(), nullable=False, default=False)
     creator_id = reference_col('users', nullable=False)
     creator = relationship('User')
     fraternity_id = reference_col('fraternities', nullable=False)
     fraternity = relationship('Fraternity')
-    guests = relationship('Guest')
+    guests = relationship('Guest', cascade='delete', single_parent=True)
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -62,6 +63,11 @@ class Party(SurrogatePK, Model):
     def female_guests(self):
         """Get the female guests"""
         return [guest for guest in self.guests if not guest.is_male]
+
+    def start(self):
+        """Let's get it started"""
+        self.started = True
+        self.save()
 
 
 class Guest(SurrogatePK, Model):

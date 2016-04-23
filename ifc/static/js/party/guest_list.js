@@ -4,6 +4,8 @@ Backbone.$ = $;
 // define the base URL for the backbone classes
 window.base_url = document.location.pathname;
 
+// see if the party has started
+window.partyStarted = $('meta[name=started]').attr('content') === "True";
 
 // define the current user
 window.me = undefined;

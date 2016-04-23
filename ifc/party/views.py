@@ -15,7 +15,7 @@ blueprint = Blueprint('party', __name__, url_prefix='/parties', static_folder='.
 @login_required
 def parties():
     """List the parties."""
-    return render_template('party/list.html', parties=current_user.fraternity.parties)
+    return render_template('party/list.html', parties=sorted(current_user.fraternity.parties, key=lambda x: x.date, reverse=True))
 
 
 @blueprint.route('/new', methods=['GET'])
@@ -59,6 +59,17 @@ def guest_list(id):
             return render_template('party/guests.html', party=party)
         else:
             raise Forbidden()
+
+
+@blueprint.route('/<int:id>/start', methods=['POST'])
+@login_required
+def start_party(id):
+    party = Party.find_by_id(id)
+    if current_user.can_delete_party(party):
+        party.start()
+        return redirect(url_for('party.parties'))
+    else:
+        raise Forbidden()
 
 
 @blueprint.route('/<int:id>', methods=['DELETE'])
@@ -112,7 +123,6 @@ def delete_guest_from_list(party_id, guest_id):
 def add_guest(party_id):
     party = Party.find_by_id(party_id)
     if current_user.can_view_party(party):
-        print request.json
         try:
             guest = Guest.create(name=request.json['name'].lower(),
                                  host=current_user,
@@ -137,8 +147,10 @@ def switch_guest_occupancy(party_id, guest_id):
     party = Party.find_by_id(party_id)
     if current_user.can_view_party(party):
         guest = Guest.find_by_id(guest_id)
-        guest.is_at_party != guest.is_at_party
+        print guest.is_at_party
+        guest.is_at_party = not guest.is_at_party
         guest.save()
+        print guest.is_at_party
         message = "Successfully checked in guest" if guest.is_at_party else "Successfully checked out guest"
         res = jsonify(message=message)
         res.status_code = 202

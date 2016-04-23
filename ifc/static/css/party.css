@@ -65,3 +65,8 @@
   height: 50px;
   line-height: 3.2;
 }
+
+.guest .checked-in-icon {
+  font-size: 30px;
+  float: right;
+}

@@ -14,6 +14,10 @@
 
     parse: function(res) {
       return res.guests;
+    },
+
+    checkedInCount: function() {
+      return this.where({ is_at_party: true }).length;
     }
   });
 })();

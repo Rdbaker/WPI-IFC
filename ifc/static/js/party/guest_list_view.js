@@ -6,6 +6,8 @@
       this.collection = options.collection;
       this.collection.fetch();
       this.listenTo(this.collection, 'add', this.addNew);
+      this.collection.bind('change', this.updateCount.bind(this));
+      this.listenTo(this.collection, 'remove', this.updateCount);
       this.modelViews = [];
       this.collection.each(this.addNew, this);
       this.searchInput = $('#guest-search');
@@ -19,6 +21,21 @@
       }.bind(this));
       this.searching = true;
       this.lastSearch = null;
+      if(this.collection.is_male) {
+        this.countElt = $('#male-count');
+      } else {
+        this.countElt = $('#female-count');
+      }
+    },
+
+    updateCount: function() {
+      if(window.partyStarted) {
+        var count = this.collection.checkedInCount();
+      } else {
+        var count = this.collection.models.length;
+      }
+
+      this.countElt.html(count);
     },
 
     addNew: function(model) {
@@ -26,6 +43,7 @@
       this.$el.append(elt);
       var mv = new GuestList.Views.GuestView({ model: model, el: elt });
       this.modelViews.push(mv);
+      this.updateCount();
     },
 
     makeChildElt: function() {
