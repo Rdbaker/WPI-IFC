@@ -1,4 +1,4 @@
-"""empty message
+"""Adds 'started' boolean to parties
 
 Revision ID: efe2394273fe
 Revises: c7409dde9162

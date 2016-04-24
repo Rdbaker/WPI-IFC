@@ -1,4 +1,4 @@
-"""empty message
+"""Makes 'can_have_parties' NOT NULL
 
 Revision ID: cc3b6c92f663
 Revises: d5bbb68e3d38

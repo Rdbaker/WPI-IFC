@@ -1,4 +1,4 @@
-"""empty message
+"""Adds 'can_have_parties' boolean to fraternities
 
 Revision ID: d5bbb68e3d38
 Revises: efe2394273fe
