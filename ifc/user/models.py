@@ -49,7 +49,7 @@ class User(UserMixin, SurrogatePK, Model):
     fraternity_id = reference_col('fraternities', nullable=False)
     fraternity = relationship('Fraternity')
 
-    parties = relationship('Party')
+    parties = relationship('Party', cascade='delete', single_parent=True)
 
     def __init__(self, username, password=None, **kwargs):
         """Create instance."""

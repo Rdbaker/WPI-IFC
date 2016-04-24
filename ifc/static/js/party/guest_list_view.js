@@ -2,6 +2,8 @@
   'use strict';
 
   GuestList.Views.GuestListView = Backbone.View.extend({
+    template: "<div class=\"button-group\"><div class=\"btn btn-danger btn-exit\"><i class=\"fa fa-icon fa-minus\"></i></div><div class=\"btn btn-success btn-enter\"><i class=\"fa fa-icon fa-plus\"></i></div></div>",
+
     initialize: function(options) {
       this.collection = options.collection;
       this.collection.fetch();
@@ -26,6 +28,12 @@
       } else {
         this.countElt = $('#female-count');
       }
+      this.render();
+    },
+
+    events: {
+      'click .btn-exit': 'randomLeftParty',
+      'click .btn-enter': 'randomEnteredParty'
     },
 
     updateCount: function() {
@@ -36,6 +44,14 @@
       }
 
       this.countElt.html(count);
+    },
+
+    randomEnteredParty: function() {
+      this.collection.randomEnteredParty();
+    },
+
+    randomLeftParty: function() {
+      this.collection.randomLeftParty();
     },
 
     addNew: function(model) {
@@ -54,7 +70,8 @@
     },
 
     render: function() {
-      this.modelViews.each(function(mv) { mv.render(); });
+      if(window.partyStarted)
+        this.$el.append(_.template(this.template));
     },
 
     search: function() {

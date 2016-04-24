@@ -11,7 +11,6 @@ class Preuser(Model):
     __tablename__ = 'preusers'
     id = db.Column(db.Integer, primary_key=True)
     username = Column(db.String(80))
-    #: The hashed password
     first_name = Column(db.String(30))
     last_name = Column(db.String(30))
     chapter_admin = Column(db.Boolean())

@@ -4,7 +4,7 @@ from flask import Flask, render_template
 from flask_admin import Admin
 
 import ifc.models as models
-from ifc import public, user, party, admin
+from ifc import public, user, party, ingest
 from ifc.assets import assets
 from ifc.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
 from ifc.settings import ProdConfig
@@ -29,7 +29,7 @@ def register_extensions(app):
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
-    admin = Admin(app, name='WPI IFC -- beeechheeezzzzz', template_mode='bootstrap3')
+    admin = Admin(app, name='WPI IFC - Admin Console', template_mode='bootstrap3')
     csrf_protect.init_app(app)
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
@@ -41,8 +41,8 @@ def register_blueprints(app):
     """Register Flask blueprints."""
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
-    app.register_blueprint(admin.views.blueprint)
     app.register_blueprint(party.views.blueprint)
+    app.register_blueprint(ingest.views.blueprint)
     return None
 
 
@@ -61,4 +61,6 @@ def register_errorhandlers(app):
 def register_admin(admin):
     """Set up the admin console for the app."""
     admin.add_view(models.UserModelView(models.User, db.session))
+    admin.add_view(models.FraternityModelView(models.Fraternity, db.session))
+    admin.add_view(models.PreuserModelView(models.Preuser, db.session))
     admin.add_view(models.RoleModelView(models.Role, db.session))

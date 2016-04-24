@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""User views."""
+"""Party views."""
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from werkzeug.exceptions import Forbidden
@@ -147,10 +147,8 @@ def switch_guest_occupancy(party_id, guest_id):
     party = Party.find_by_id(party_id)
     if current_user.can_view_party(party):
         guest = Guest.find_by_id(guest_id)
-        print guest.is_at_party
         guest.is_at_party = not guest.is_at_party
         guest.save()
-        print guest.is_at_party
         message = "Successfully checked in guest" if guest.is_at_party else "Successfully checked out guest"
         res = jsonify(message=message)
         res.status_code = 202

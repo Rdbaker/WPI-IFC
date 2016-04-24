@@ -18,6 +18,22 @@
 
     checkedInCount: function() {
       return this.where({ is_at_party: true }).length;
-    }
+    },
+
+    randomEnteredParty: function() {
+      var guests = this.where({ is_at_party: false });
+      if(guests.length === 0)
+        return;
+      var guest = guests[Math.floor(Math.random()*guests.length)];
+      guest.save({'is_at_party': true});
+    },
+
+    randomLeftParty: function() {
+      var guests = this.where({ is_at_party: true });
+      if(guest === 0)
+        return;
+      var guest = guests[Math.floor(Math.random()*guests.length)];
+      guest.save({'is_at_party': false});
+    },
   });
 })();

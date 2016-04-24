@@ -21,6 +21,10 @@
     <ul class="nav navbar-nav">
       <li><a href="{{ url_for('party.parties') }}">Home</a></li>
       <li><a href="{{ url_for('public.about') }}">About</a></li>
+      {% if current_user and current_user.is_site_admin %}
+        <li><a href="{{ url_for('admin.index') }}">Admin</a></li>
+        <li><a href="{{ url_for('ingest.upload_file') }}">Ingest</a></li>
+      {% endif %}
     </ul>
     {% if current_user and current_user.is_authenticated %}
     <ul class="nav navbar-nav navbar-right">

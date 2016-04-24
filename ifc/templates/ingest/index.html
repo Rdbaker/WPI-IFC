@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+  <form method="post" action={{ url_for('ingest.upload_file') }} enctype="multipart/form-data">
+    <input type="file" name="file">
+    <input type="submit" value="Upload">
+  </form>
+</div>
+<div class="container">
+  <div class="bg-warning">
+    Warning! This thing is <em>dangerous</em>
+  </div>
+  <div>
+    First: the format. Make sure you export an excel file to a .csv file with the following column headers:
+    <p>fraternity_name</p>
+    <p>first_name</p>
+    <p>last_name</p>
+    <p>email</p>
+    <p>chapter_admin</p>
+    <p>ifc_admin</p>
+    This is <strong>case sensitive</strong> and the email MUST be a @wpi.edu email or the user won't get an account.
+    <p>the "ifc_admin" and "chapter_admin" columns need to either be "True" or "False" (or empty, which counts as false) without the quotes.</p>
+  </div>
+  <div>
+    <p>Second: know what you're doing. Uploading this file will delete users that are not in the csv file. I'll say that again: IF A USER IS NOT IN THAT FILE, THEY WILL BE DELETED.</p>
+  </div>
+</div>
+{% endblock %}

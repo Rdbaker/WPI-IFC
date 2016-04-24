@@ -11,7 +11,7 @@ from ifc.party.models import Fraternity, Party, Guest
 
 class UserModelView(ModelView):
     column_exclude_list = ['password']
-    column_searchable_list = ['username']
+    column_searchable_list = ['username', 'first_name', 'last_name']
     form_excluded_columns = ['password']
 
     def is_accessible(self):
@@ -24,6 +24,32 @@ class UserModelView(ModelView):
 
 
 class RoleModelView(ModelView):
+    can_delete = False
+    can_edit = False
+
+    def is_accessible(self):
+        """Blocks users that aren't allowed in."""
+        return current_user.is_site_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        """Throws the user to a 401 page if they shouldn't be here."""
+        raise Unauthorized()
+
+
+class FraternityModelView(ModelView):
+    can_delete = False
+
+    def is_accessible(self):
+        """Blocks users that aren't allowed in."""
+        return current_user.is_site_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        """Throws the user to a 401 page if they shouldn't be here."""
+        raise Unauthorized()
+
+
+class PreuserModelView(ModelView):
+    column_searchable_list = ['username', 'first_name', 'last_name']
     can_delete = False
     can_edit = False
 

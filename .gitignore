@@ -55,3 +55,6 @@ ifc/static/libs
 ifc/static/js/compiled
 ifc/static/css/compiled
 node_modules
+
+# ignore test csv files
+*.csv

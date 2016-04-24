@@ -14,6 +14,7 @@ class Fraternity(SurrogatePK, Model):
     capacity = Column(db.Integer(), nullable=False)
     users = relationship('User')
     parties = relationship('Party', cascade='delete', single_parent=True)
+    can_have_parties = Column(db.Boolean(), default=True, nullable=False)
 
     def __repr__(self):
         """Represent instance as a unique string."""
