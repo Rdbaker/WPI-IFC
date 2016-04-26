@@ -17,6 +17,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format('wpiifc', 'wpiifc123', 'localhost', '5432', 'wpiifc')
     UPLOAD_FOLDER = os.path.join(APP_DIR, 'uploads')
+    WTF_CSRF_ENABLED = False  # Allows form testing
 
 
 class ProdConfig(Config):
@@ -37,7 +38,6 @@ class DevConfig(Config):
     DEBUG_TB_ENABLED = True
     ASSETS_DEBUG = True  # Don't bundle/minify static assets
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
-    WTF_CSRF_ENABLED = False  # Allows form testing
 
 
 class TestConfig(Config):

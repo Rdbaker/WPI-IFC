@@ -2,12 +2,14 @@
 {% block content %}
     <h1 class="title">{{ current_user.fraternity.title }}'s Parties</h1>
     <div class="container-fluid">
+      {% if current_user.can_create_party %}
       <a href={{ url_for('party.newparty') }}>
         <div class="btn btn-success">
           <i class="fa fa-icon fa-plus"></i>
           New Party
         </div>
       </a>
+      {% endif %}
     </div>
     <table class="table table-hover">
       <thead>
