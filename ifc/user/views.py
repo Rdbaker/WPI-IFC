@@ -10,7 +10,7 @@ blueprint = Blueprint('ifc-user', __name__, url_prefix='/users', static_folder='
 @login_required
 def members():
     """Redirect to parties list."""
-    return redirect(url_for('party.parties'))
+    return redirect(url_for('parties.parties'))
 
 
 @blueprint.route('/me')

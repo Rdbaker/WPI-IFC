@@ -40,7 +40,7 @@ def createparty():
                 fraternity=current_user.fraternity,
                 creator=current_user)
             flash('Party created.', 'success')
-            return redirect(url_for('party.parties'))
+            return redirect(url_for('parties.parties'))
         else:
             flash_errors(form)
             return render_template('party/new.html', form=form)
@@ -67,7 +67,7 @@ def start_party(id):
     party = Party.find_by_id(id)
     if current_user.can_delete_party(party):
         party.start()
-        return redirect(url_for('party.parties'))
+        return redirect(url_for('parties.parties'))
     else:
         raise Forbidden()
 
@@ -78,7 +78,7 @@ def delete_party(id):
     party = Party.find_by_id(id)
     if current_user.can_delete_party(party):
         party.delete()
-        return redirect(url_for('party.parties'))
+        return redirect(url_for('parties.parties'))
     else:
         raise Forbidden()
 
