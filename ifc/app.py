@@ -62,5 +62,6 @@ def register_admin(admin):
     """Set up the admin console for the app."""
     admin.add_view(models.UserModelView(models.User, db.session))
     admin.add_view(models.FraternityModelView(models.Fraternity, db.session))
+    admin.add_view(models.PartyModelView(models.Party, db.session))
     admin.add_view(models.PreuserModelView(models.Preuser, db.session))
     admin.add_view(models.RoleModelView(models.Role, db.session))

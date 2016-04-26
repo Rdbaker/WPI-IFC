@@ -8,7 +8,7 @@ from . import forms
 from .models import Party, Guest
 from ifc.utils import flash_errors
 
-blueprint = Blueprint('party', __name__, url_prefix='/parties', static_folder='../static')
+blueprint = Blueprint('parties', __name__, url_prefix='/parties', static_folder='../static')
 
 
 @blueprint.route('/')
