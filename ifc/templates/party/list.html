@@ -3,7 +3,7 @@
     <h1 class="title">{{ current_user.fraternity.title }}'s Parties</h1>
     <div class="container-fluid">
       {% if current_user.can_create_party %}
-      <a href={{ url_for('party.newparty') }}>
+      <a href={{ url_for('parties.newparty') }}>
         <div class="btn btn-success">
           <i class="fa fa-icon fa-plus"></i>
           New Party
@@ -33,7 +33,7 @@
             <td> {{ party.name }} </td>
             <td> {{ party.date.__format__('%A, %B %d, %Y') }} </td>
             <td>
-              <a href={{ url_for('party.guest_list', id=party.id) }}>
+              <a href={{ url_for('parties.guest_list', id=party.id) }}>
                 <div class="btn btn-info btn-sm">
                   Guests
                 </div>
@@ -42,7 +42,7 @@
             {% if current_user.can_delete_party(party) %}
               <td>
                 {% if not party.started %}
-                <form action={{ url_for('party.start_party', id=party.id) }} method="post">
+                <form action={{ url_for('parties.start_party', id=party.id) }} method="post">
                   <input type="submit" class="btn btn-warning" value="Start Party">
                 </form>
                 {% else %}
@@ -50,7 +50,7 @@
                 {% endif %}
               </td>
               <td>
-                <form action={{ url_for('party.delete_party', id=party.id) }} method="post">
+                <form action={{ url_for('parties.delete_party', id=party.id) }} method="post">
                   <input type="submit" class="btn btn-danger" value="Delete">
                 </form>
               </td>
