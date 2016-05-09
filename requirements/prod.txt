@@ -1,6 +1,7 @@
 # Everything needed in production
 
-setuptools==20.3
+# uncomment this when moving off heroku
+# setuptools==20.3
 wheel==0.29.0
 
 # Flask
