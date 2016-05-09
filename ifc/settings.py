@@ -25,7 +25,7 @@ class ProdConfig(Config):
 
     ENV = 'prod'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') # set up automatically by Heroku
     DEBUG_TB_ENABLED = False  # Disable Debug toolbar
 
 
