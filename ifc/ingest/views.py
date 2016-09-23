@@ -19,21 +19,21 @@ def allowed_file(filename):
 
 
 @blueprint.route('/', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def upload_file():
-    #if current_user.is_site_admin:
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            fpath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-            file.save(fpath)
-            ingest_file(fpath)
-            flash('All data successfully ingested!', 'success')
-            return redirect(url_for('public.home'))
-    return render_template('ingest/index.html')
-    #else:
-    #    raise Forbidden()
+    if current_user.is_site_admin:
+        if request.method == 'POST':
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                fpath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                file.save(fpath)
+                ingest_file(fpath)
+                flash('All data successfully ingested!', 'success')
+                return redirect(url_for('public.home'))
+        return render_template('ingest/index.html')
+    else:
+        raise Forbidden()
 
 
 def ingest_file(file_name):
