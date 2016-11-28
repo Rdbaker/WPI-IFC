@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Party models."""
 from sqlalchemy.orm import validates
+from titlecase import titlecase
 
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
-from ifc.extensions import bcrypt
 from ifc.constants import fraternityList
+
 
 class Fraternity(SurrogatePK, Model):
     """A fraternity."""
@@ -100,4 +101,4 @@ class Guest(SurrogatePK, Model):
     @property
     def json_dict(self):
         """Returns the guest as a JSON serializable python dict."""
-        return { 'name': self.name.title(), 'host': self.host.full_name, 'is_male': self.is_male, 'is_at_party': self.is_at_party, 'id': self.id }
+        return { 'name': titlecase(self.name), 'host': self.host.full_name, 'is_male': self.is_male, 'is_at_party': self.is_at_party, 'id': self.id }

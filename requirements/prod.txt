@@ -43,3 +43,4 @@ Flask-DebugToolbar==0.10.0
 cffi==1.5.2
 
 Flask-Admin==1.4.0
+titlecase==0.8.1
