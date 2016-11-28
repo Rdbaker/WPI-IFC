@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Database module, including the SQLAlchemy database object and DB-related utilities."""
+from flask import abort
 from sqlalchemy.orm import relationship
 
 from .compat import basestring
@@ -66,6 +67,13 @@ class SurrogatePK(object):
     @classmethod
     def find_by_id(cls, record_id):
         return cls.get_by_id(record_id)
+
+    @classmethod
+    def find_or_404(cls, record_id):
+        instance = cls.find_by_id(record_id)
+        if instance is None:
+            abort(404)
+        return instance
 
 
 def reference_col(tablename, nullable=False, pk_name='id', **kwargs):

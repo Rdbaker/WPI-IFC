@@ -34,7 +34,7 @@ def createparty():
     if current_user.can_create_party:
         form = forms.NewPartyForm(request.form)
         if form.validate_on_submit():
-            party = Party.create(
+            Party.create(
                 name=form.name.data,
                 date=form.date.data,
                 fraternity=current_user.fraternity,
@@ -54,7 +54,7 @@ def guest_list(id):
     if request.method == 'POST':
         return delete_party(id)
     else:
-        party = Party.find_by_id(id)
+        party = Party.find_or_404(id)
         if current_user.can_view_party(party):
             return render_template('party/guests.html', party=party)
         else:
@@ -64,7 +64,7 @@ def guest_list(id):
 @blueprint.route('/<int:id>/start', methods=['POST'])
 @login_required
 def start_party(id):
-    party = Party.find_by_id(id)
+    party = Party.find_or_404(id)
     if current_user.can_delete_party(party):
         party.start()
         return redirect(url_for('parties.parties'))
@@ -75,7 +75,7 @@ def start_party(id):
 @blueprint.route('/<int:id>', methods=['DELETE'])
 @login_required
 def delete_party(id):
-    party = Party.find_by_id(id)
+    party = Party.find_or_404(id)
     if current_user.can_delete_party(party):
         party.delete()
         return redirect(url_for('parties.parties'))
@@ -86,7 +86,7 @@ def delete_party(id):
 @blueprint.route('/<int:id>/guests', methods=['GET'])
 @login_required
 def get_guest_list(id):
-    party = Party.find_by_id(id)
+    party = Party.find_or_404(id)
     if current_user.can_view_party(party):
         is_male = request.args.get('is_male', 'true').lower()
         guests = party.male_guests if is_male == 'true' else party.female_guests
@@ -100,9 +100,9 @@ def get_guest_list(id):
 @blueprint.route('/<int:party_id>/guests/<int:guest_id>', methods=['DELETE'])
 @login_required
 def delete_guest_from_list(party_id, guest_id):
-    party = Party.find_by_id(party_id)
+    party = Party.find_or_404(party_id)
     if current_user.can_view_party(party):
-        guest = Guest.find_by_id(guest_id)
+        guest = Guest.find_or_404(guest_id)
         if guest.host == current_user:
             guest.delete()
             res = jsonify(message="Successfully deleted guest")
@@ -121,7 +121,7 @@ def delete_guest_from_list(party_id, guest_id):
 @blueprint.route('/<int:party_id>/guests', methods=['POST'])
 @login_required
 def add_guest(party_id):
-    party = Party.find_by_id(party_id)
+    party = Party.find_or_404(party_id)
     if current_user.can_view_party(party):
         try:
             guest = Guest.create(name=request.json['name'].lower(),
@@ -144,9 +144,9 @@ def add_guest(party_id):
 @blueprint.route('/<int:party_id>/guests/<int:guest_id>', methods=['PUT', 'PATCH'])
 @login_required
 def switch_guest_occupancy(party_id, guest_id):
-    party = Party.find_by_id(party_id)
+    party = Party.find_or_404(party_id)
     if current_user.can_view_party(party):
-        guest = Guest.find_by_id(guest_id)
+        guest = Guest.find_or_404(guest_id)
         guest.is_at_party = not guest.is_at_party
         guest.save()
         message = "Successfully checked in guest" if guest.is_at_party else "Successfully checked out guest"
