@@ -22,12 +22,9 @@
     },
 
     filter: function(re) {
-      // let's fuzzy search on the query
-      // check the guests's name
-      if(re.test(this.get('name').toLowerCase()))
-        return true;
-      // check the host's name
-      return re.test(this.get('host').toLowerCase());
+      // check the guests's name or the host's name
+      return (this.get('name').toLowerCase().indexOf(re) > -1 ||
+          this.get('host').toLowerCase().indexOf(re) > -1);
     }
   });
 })();
