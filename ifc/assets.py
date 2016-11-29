@@ -33,6 +33,12 @@ guest_list_css = Bundle(
     output='public/css/compiled/party.css'
 )
 
+report_coffee = Bundle(
+    'coffee/reports/main.coffee',
+    output='public/js/compiled/reports.js',
+    filters=['coffeescript', 'jsmin']
+)
+
 
 
 assets = Environment()
@@ -41,3 +47,4 @@ assets.register('js_all', js)
 assets.register('guest_list_js', guest_list_js)
 assets.register('css_all', css)
 assets.register('guest_list_css', guest_list_css)
+assets.register('report_coffee', report_coffee)

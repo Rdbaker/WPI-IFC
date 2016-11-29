@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Party models."""
+from datetime import datetime as dt
+
 from sqlalchemy.orm import validates
 from titlecase import titlecase
 
@@ -35,6 +37,7 @@ class Party(SurrogatePK, Model):
     name = Column(db.String(80), nullable=False)
     date = Column(db.Date(), nullable=False)
     started = Column(db.Boolean(), nullable=False, default=False)
+    ended = Column(db.Boolean(), nullable=False, default=False)
     creator_id = reference_col('users', nullable=False)
     creator = relationship('User')
     fraternity_id = reference_col('fraternities', nullable=False)
@@ -71,6 +74,11 @@ class Party(SurrogatePK, Model):
         self.started = True
         self.save()
 
+    def end(self):
+        """Ok, that's enough PARTY'S OVER."""
+        self.ended = True
+        self.save()
+
 
 class Guest(SurrogatePK, Model):
     """A guest for a party"""
@@ -84,6 +92,8 @@ class Guest(SurrogatePK, Model):
     party = relationship('Party')
     is_at_party = Column(db.Boolean(), default=False, nullable=False)
     is_male = Column(db.Boolean(), nullable=False)
+    entered_party_at = Column(db.DateTime)
+    left_party_at = Column(db.DateTime)
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -101,4 +111,19 @@ class Guest(SurrogatePK, Model):
     @property
     def json_dict(self):
         """Returns the guest as a JSON serializable python dict."""
-        return { 'name': titlecase(self.name), 'host': self.host.full_name, 'is_male': self.is_male, 'is_at_party': self.is_at_party, 'id': self.id }
+        return {'name': titlecase(self.name), 'host': self.host.full_name,
+                'is_male': self.is_male, 'is_at_party': self.is_at_party,
+                'id': self.id, 'left_at': self.left_party_at,
+                'entered_at': self.entered_party_at}
+
+    def leave_party(self):
+        """The logic for a guest leaving the party."""
+        self.is_at_party = False
+        self.left_party_at = dt.utcnow()
+        self.save()
+
+    def enter_party(self):
+        """The logic for a guest entering a party."""
+        self.is_at_party = True
+        self.entered_party_at = dt.utcnow()
+        self.save()

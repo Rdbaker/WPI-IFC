@@ -18,6 +18,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format('wpiifc', 'wpiifc123', 'localhost', '5432', 'wpiifc')
     UPLOAD_FOLDER = os.path.join(APP_DIR, 'uploads')
     WTF_CSRF_ENABLED = False  # Allows form testing
+    COFFEE_BIN = './node_modules/.bin/coffee'
 
 
 class ProdConfig(Config):

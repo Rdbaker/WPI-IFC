@@ -15,15 +15,17 @@
       <thead>
         <tr>
           {% if current_user.can_delete_party(party) %}
-            <th class="col-xs-5"> Party Name </th>
+            <th class="col-xs-4"> Party Name </th>
             <th class="col-xs-2"> Date </th>
             <th class="col-xs-2"> Guest List </th>
             <th class="col-xs-2"> Start Party </th>
             <th class="col-xs-1"> Delete </th>
+            <th class="col-xs-1"> Report </th>
           {% else %}
-            <th class="col-xs-6"> Party Name </th>
+            <th class="col-xs-5"> Party Name </th>
             <th class="col-xs-3"> Date </th>
             <th class="col-xs-2"> Guest List </th>
+            <th class="col-xs-1"> Report </th>
           {% endif %}
         </tr>
       </thead>
@@ -45,8 +47,12 @@
                 <form action={{ url_for('parties.start_party', id=party.id) }} method="post">
                   <input type="submit" class="btn btn-warning" value="Start Party">
                 </form>
+                {% elif not party.ended %}
+                <form action={{ url_for('parties.end_party', id=party.id) }} method="post">
+                  <input type="submit" class="btn btn-danger" value="End Party">
+                </form>
                 {% else %}
-                <button type="button" class="btn btn-info" disabled="disabled">Started</button>
+                <button type="button" class="btn btn-info" disabled="disabled">Ended</button>
                 {% endif %}
               </td>
               <td>
@@ -55,6 +61,13 @@
                 </form>
               </td>
             {% endif %}
+            <td>
+              <a href={{ url_for('parties.report', id=party.id) }}>
+                <div class="btn btn-info btn-sm">
+                  <i class="fa fa-icon fa-area-chart"></i>
+                </div>
+              </a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

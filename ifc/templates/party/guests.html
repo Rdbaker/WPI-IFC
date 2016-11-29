@@ -57,6 +57,7 @@
 {% block js %}
   {% assets "guest_list_js" %}
       <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
       <!-- Start of Async Drift Code -->
 <script>
 !function() {
@@ -81,5 +82,4 @@ drift.SNIPPET_VERSION = '0.3.1';
 drift.load('6utnke5kcc3d');
 </script>
 <!-- End of Async Drift Code -->
-  {% endassets %}
 {% endblock %}

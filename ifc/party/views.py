@@ -61,12 +61,33 @@ def guest_list(id):
             raise Forbidden()
 
 
+@blueprint.route('/<int:id>/report', methods=['GET'])
+@login_required
+def report(id):
+    party = Party.find_or_404(id)
+    if current_user.can_view_party(party):
+        return render_template('report/index.html', party=party)
+    else:
+        raise Forbidden()
+
+
 @blueprint.route('/<int:id>/start', methods=['POST'])
 @login_required
 def start_party(id):
     party = Party.find_or_404(id)
     if current_user.can_delete_party(party):
         party.start()
+        return redirect(url_for('parties.parties'))
+    else:
+        raise Forbidden()
+
+
+@blueprint.route('/<int:id>/end', methods=['POST'])
+@login_required
+def end_party(id):
+    party = Party.find_or_404(id)
+    if current_user.can_delete_party(party):
+        party.end()
         return redirect(url_for('parties.parties'))
     else:
         raise Forbidden()
@@ -147,8 +168,10 @@ def switch_guest_occupancy(party_id, guest_id):
     party = Party.find_or_404(party_id)
     if current_user.can_view_party(party):
         guest = Guest.find_or_404(guest_id)
-        guest.is_at_party = not guest.is_at_party
-        guest.save()
+        if guest.is_at_party:
+            guest.leave_party()
+        else:
+            guest.enter_party()
         message = "Successfully checked in guest" if guest.is_at_party else "Successfully checked out guest"
         res = jsonify(message=message)
         res.status_code = 202
