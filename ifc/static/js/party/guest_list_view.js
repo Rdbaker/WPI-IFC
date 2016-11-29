@@ -71,7 +71,7 @@
 
     search: function() {
       // get the query string
-      var query = this.searchInput.val();
+      var query = this.searchInput.val().toLowerCase();
       this.modelViews.forEach(function(mv) { mv.search(query); });
     }
   });
