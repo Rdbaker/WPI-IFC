@@ -5,14 +5,14 @@ from datetime import date
 from flask_wtf import Form
 from flask_login import current_user
 from wtforms import StringField, DateField
-from wtforms.validators import DataRequired, EqualTo, Length
+from wtforms.validators import DataRequired, Length
 
 
 class NewPartyForm(Form):
     """New Party form."""
 
     name = StringField('Party Name',
-                           validators=[DataRequired(), Length(min=3, max=35)])
+                       validators=[DataRequired(), Length(min=3, max=35)])
     date = DateField('Party Date', validators=[DataRequired()])
 
     def __init__(self, user, *args, **kwargs):

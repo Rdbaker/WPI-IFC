@@ -68,7 +68,7 @@ class TestLoggingIn:
 class TestRegistering:
     """Register a user."""
 
-    def test_can_register(self, user, testapp):
+    def test_can_register(self, user, preuser2, testapp):
         """Register a new user."""
         old_count = len(User.query.all())
         # Goes to homepage
@@ -77,7 +77,7 @@ class TestRegistering:
         res = res.click('Create account')
         # Fills out the form
         form = res.forms['registerForm']
-        form['username'] = 'foobar'
+        form['username'] = preuser2.username
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         # Submits
@@ -102,8 +102,6 @@ class TestRegistering:
 
     def test_sees_error_message_if_user_already_registered(self, user, testapp):
         """Show error if user already registered."""
-        user = UserFactory(active=True)  # A registered user
-        user.save()
         # Goes to registration page
         res = testapp.get(url_for('public.register'))
         # Fills out form, but username is already registered

@@ -1,66 +1,34 @@
 # -*- coding: utf-8 -*-
 """Model unit tests."""
-import datetime as dt
-
 import pytest
 
-from ifc.user.models import Role, User
-
-from .factories import UserFactory
+from ifc.user.models import User
 
 
 @pytest.mark.usefixtures('db')
 class TestUser:
     """User tests."""
 
-    def test_get_by_id(self):
+    def test_get_by_id(self, user):
         """Get user by ID."""
-        user = User('foo', 'foo@bar.com')
         user.save()
-
-        retrieved = User.get_by_id(user.id)
+        retrieved = User.find_by_id(user.id)
         assert retrieved == user
 
-    def test_created_at_defaults_to_datetime(self):
-        """Test creation date."""
-        user = User(username='foo')
-        user.save()
-        assert bool(user.created_at)
-        assert isinstance(user.created_at, dt.datetime)
-
-    def test_password_is_nullable(self):
-        """Test null password."""
-        user = User(username='foo')
-        user.save()
-        assert user.password is None
-
-    def test_factory(self, db):
+    def test_factory(self, db, user):
         """Test user factory."""
-        user = UserFactory(password='myprecious')
-        db.session.commit()
         assert bool(user.username)
-        assert bool(user.created_at)
-        assert user.is_admin is False
         assert user.active is True
         assert user.check_password('myprecious')
 
-    def test_check_password(self):
+    def test_check_password(self, preuser, role, frat):
         """Check password."""
-        user = User.create(username='foo',
-                           password='foobarbaz123')
+        user = User.create(username=preuser.username,
+                           password='foobarbaz123',
+                           role_id=role.id, fraternity_id=frat.id)
         assert user.check_password('foobarbaz123') is True
         assert user.check_password('barfoobaz') is False
 
-    def test_full_name(self):
+    def test_full_name(self, user):
         """User full name."""
-        user = UserFactory(first_name='Foo', last_name='Bar')
-        assert user.full_name == 'Foo Bar'
-
-    def test_roles(self):
-        """Add a role to a user."""
-        role = Role(name='admin')
-        role.save()
-        user = UserFactory()
-        user.roles.append(role)
-        user.save()
-        assert role in user.roles
+        assert user.full_name == user.first_name + ' ' + user.last_name
