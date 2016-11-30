@@ -44,3 +44,6 @@ cffi==1.5.2
 
 Flask-Admin==1.4.0
 titlecase==0.8.1
+
+# use SSL in production (heroku only)
+Flask-SSLify==0.1.5

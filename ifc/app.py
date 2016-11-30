@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
+import os
+
 from flask import Flask, render_template
 from flask_admin import Admin
+from flask_sslify import SSLify
 
 import ifc.models as models
 from ifc import public, user, party, ingest
@@ -25,6 +28,11 @@ def create_app(config_object=ProdConfig):
 
 def register_extensions(app):
     """Register Flask extensions."""
+
+    # only use SSL if we're on heroku
+    if 'DYNO' in os.environ:
+        SSLify(app)
+
     assets.init_app(app)
     bcrypt.init_app(app)
     cache.init_app(app)
