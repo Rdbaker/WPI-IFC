@@ -52,8 +52,8 @@ def ingest_file(file_name):
             brother.pop('email')
             # lol somebody's name was too long so I'm doing this
             brother['first_name'] = brother['first_name'].split()[0][:30]
-            brother['chapter_admin'] = brother.get('chapter_admin', None) == 'True'
-            brother['ifc_admin'] = brother.get('ifc_admin', None) == 'True'
+            brother['chapter_admin'] = brother.get('chapter_admin', None).lower() == 'true'
+            brother['ifc_admin'] = brother.get('ifc_admin', None).lower() == 'true'
             # placeholder logic to test, normally these are columns
             if brother['username'] in ['rdbaker', 'frlee']:
                 brother['chapter_admin'] = True
