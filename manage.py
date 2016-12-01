@@ -14,7 +14,7 @@ from flask_script.commands import Clean, ShowUrls
 import ifc.models as models
 from ifc.app import create_app
 from ifc.database import db
-from ifc.settings import DevConfig, ProdConfig
+from ifc.settings import DevConfig, ProdConfig, TestConfig
 from seeds import FRATERNITIES, ROLES
 
 if os.environ.get('IFC_ENV') == 'prod':
