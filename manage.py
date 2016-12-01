@@ -17,7 +17,12 @@ from ifc.database import db
 from ifc.settings import DevConfig, ProdConfig
 from seeds import FRATERNITIES, ROLES
 
-CONFIG = ProdConfig if os.environ.get('IFC_ENV') == 'prod' else DevConfig
+if os.environ.get('IFC_ENV') == 'prod':
+    CONFIG = ProdConfig
+elif os.environ.get('IFC_ENV') == 'test':
+    CONFIG = TestConfig
+else:
+    CONFIG = DevConfig
 HERE = os.path.abspath(os.path.dirname(__file__))
 TEST_PATH = os.path.join(HERE, 'tests')
 CREATE_DB = 'create database %s'
