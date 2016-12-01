@@ -10,14 +10,22 @@ from ifc.party.models import Fraternity, Party, Guest  # noqa
 
 
 class AdminModelView(ModelView):
-    def is_accessible(self):
-        """Blocks users that aren't allowed in."""
+    @staticmethod
+    def _is_accessible():
         return hasattr(current_user, 'is_site_admin') and \
             current_user.is_site_admin
 
+    @staticmethod
+    def _inaccessible_callback(*args):
+        raise Unauthorized()
+
+    def is_accessible(self):
+        """Blocks users that aren't allowed in."""
+        return self._is_accessible()
+
     def inaccessible_callback(self, name, **kwargs):
         """Throws the user to a 401 page if they shouldn't be here."""
-        raise Unauthorized()
+        return self._inaccessible_callback()
 
 
 class UserModelView(AdminModelView):

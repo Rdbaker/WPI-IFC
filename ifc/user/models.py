@@ -122,7 +122,8 @@ class User(UserMixin, SurrogatePK, Model):
 
     def can_delete_party(self, party):
         """True if the user can delete the given party."""
-        return self.is_site_admin or (self.is_chapter_admin and self.fraternity == party.fraternity)
+        return self.is_site_admin or (self.is_chapter_admin and
+                                      self.fraternity == party.fraternity)
 
     @property
     def can_create_party(self):

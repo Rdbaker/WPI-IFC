@@ -14,7 +14,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          {% if current_user.can_delete_party(party) %}
+          {% if current_user.is_site_admin or current_user.is_chapter_admin %}
             <th class="col-xs-4"> Party Name </th>
             <th class="col-xs-2"> Date </th>
             <th class="col-xs-2"> Guest List </th>
