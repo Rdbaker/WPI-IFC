@@ -9,4 +9,6 @@ services:
 before_script:
   - psql -c 'create database wpiifc_test;' -U postgres
   - psql -c "create user wpiifc with superuser password 'wpiifc123';" -U postgres
+  - npm install
+  - ./node_modules/.bin/bower install
 script: python manage.py test
