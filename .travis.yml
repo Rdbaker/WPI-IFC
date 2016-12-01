@@ -7,6 +7,6 @@ install: pip install -r requirements/dev.txt
 services:
   - postgresql
 before_script:
-  - psql -c 'create database wordfor_test;' -U postgres
-  - psql -c "create user wordfor with superuser password 'wordfor123';" -U postgres
+  - psql -c 'create database wpiifc_test;' -U postgres
+  - psql -c "create user wpiifc with superuser password 'wpiifc123';" -U postgres
 script: python manage.py test
