@@ -15,7 +15,9 @@ blueprint = Blueprint('parties', __name__, url_prefix='/parties', static_folder=
 @login_required
 def parties():
     """List the parties."""
-    return render_template('party/list.html', parties=sorted(current_user.fraternity.parties, key=lambda x: x.date, reverse=True))
+    return render_template('party/list.html',
+                           parties=sorted(list(current_user.fraternity.parties),
+                                          key=lambda x: x.date, reverse=True))
 
 
 @blueprint.route('/new', methods=['GET'])
