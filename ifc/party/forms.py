@@ -15,11 +15,6 @@ class NewPartyForm(Form):
                        validators=[DataRequired(), Length(min=3, max=35)])
     date = DateField('Party Date', validators=[DataRequired()])
 
-    def __init__(self, user, *args, **kwargs):
-        """Create instance."""
-        super(NewPartyForm, self).__init__(*args, **kwargs)
-        self.user = user
-
     def validate(self):
         """Validate the form."""
         initial_validation = super(NewPartyForm, self).validate()
@@ -29,7 +24,8 @@ class NewPartyForm(Form):
             self.date.errors.append('Must be after today, plan ahead.')
             return False
         if not current_user.fraternity.can_have_parties:
-            self.name.errors.append('Your fraternity can\'t host parties right now.')
+            self.name.errors.append(
+                'Your fraternity can\'t host parties right now.')
             return False
 
         return True
