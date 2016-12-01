@@ -8,7 +8,8 @@ from ifc.app import create_app
 from ifc.database import db as _db
 from ifc.settings import TestConfig
 
-from .factories import UserFactory, PreuserFactory, RoleFactory, FratFactory
+from .factories import UserFactory, PreuserFactory, RoleFactory, FratFactory, \
+    PartyFactory, GuestFactory
 
 
 @pytest.yield_fixture(scope='function')
@@ -50,9 +51,33 @@ def preuser(db):
 
 
 @pytest.fixture
+def other_preuser(db):
+    """A preuser for another fraternity."""
+    return PreuserFactory.create(fraternity_name='Zete Psi')
+
+
+@pytest.fixture
 def preuser2(db):
     """A preuser for the tests."""
     return PreuserFactory.create()
+
+
+@pytest.fixture
+def admin_preuser(db, frat):
+    return PreuserFactory.create(ifc_admin=True,
+                                 fraternity_name=frat.title)
+
+
+@pytest.fixture
+def pres_pre(db, frat):
+    return PreuserFactory.create(chapter_admin=True,
+                                 fraternity_name=frat.title)
+
+
+@pytest.fixture
+def other_pres_pre(db, other_frat):
+    return PreuserFactory.create(chapter_admin=True,
+                                 fraternity_name=other_frat.title)
 
 
 @pytest.fixture
@@ -62,30 +87,87 @@ def frat(db):
 
 
 @pytest.fixture
+def other_frat(db):
+    """Another fraternity for tests."""
+    return FratFactory.create(title='Zete Psi')
+
+
+@pytest.fixture
 def role(db):
     """A normal role for the tests."""
     return RoleFactory.create()
 
 
 @pytest.fixture
+def pres_role(db):
+    """A president role for the tests."""
+    return RoleFactory.create(title='chapter_admin')
+
+
+@pytest.fixture
+def admin_role(db):
+    """An admin role for the tests."""
+    return RoleFactory.create(title='ifc_admin')
+
+
+@pytest.fixture
 def user(db, preuser, frat, role):
     """A user for the tests."""
-    return UserFactory.create(username=preuser.username, password='myprecious',
-                              role_id=role.id, fraternity_id=frat.id,
-                              is_admin=False)
+    return UserFactory.create(username=preuser.username)
 
 
 @pytest.fixture
-def admin(db, preuser, frat):
+def other_user(db, other_preuser, other_frat, role):
+    """Another fraternity for tests."""
+    return UserFactory.create(username=other_preuser.username)
+
+
+@pytest.fixture
+def admin(db, admin_preuser, frat, admin_role):
     """An admin for the tests."""
-    role = RoleFactory.create(title='ifc_admin')
-    return UserFactory.create(username=preuser.username, password='myprecious',
-                              role_id=role.id, fraternity_id=frat.id)
+    return UserFactory.create(username=admin_preuser.username)
 
 
 @pytest.fixture
-def president(db, preuser, frat):
+def president(db, pres_pre, frat, pres_role):
     """A chapter president for the tests."""
-    role = RoleFactory.create(title='chapter_admin')
-    return UserFactory.create(username=preuser.username, password='myprecious',
-                              role_id=role.id, fraternity_id=frat.id)
+    return UserFactory(username=pres_pre.username)
+
+
+@pytest.fixture
+def other_pres(db, other_pres_pre, other_frat, pres_role):
+    """A president of another chapter for the tests."""
+    return UserFactory.create(username=other_pres_pre.username)
+
+
+@pytest.fixture
+def party(db, frat, president):
+    """A party for the tests."""
+    return PartyFactory.create(fraternity=frat,
+                               creator=president)
+
+
+@pytest.fixture
+def other_party(db, other_frat, other_pres):
+    """A party from another frat."""
+    return PartyFactory.create(fraternity=other_frat,
+                               creator=other_pres)
+
+
+@pytest.fixture
+def guest(db, user, party):
+    """A guest for the tests."""
+    return GuestFactory.create(host=user,
+                               host_id=user.id,
+                               party=party,
+                               party_id=party.id)
+
+
+@pytest.fixture
+def other_guest(db, other_user, other_party):
+    """A guest from another party for the tests."""
+    return GuestFactory.create(host=other_user,
+                               host_id=other_user.id,
+                               party=other_party,
+                               is_male=False,
+                               party_id=other_party.id)

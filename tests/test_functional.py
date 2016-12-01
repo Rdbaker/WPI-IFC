@@ -7,8 +7,6 @@ from flask import url_for
 
 from ifc.user.models import User
 
-from .factories import UserFactory
-
 
 class TestLoggingIn:
     """Login."""
@@ -20,7 +18,7 @@ class TestLoggingIn:
         # Fills out login form in navbar
         form = res.forms['loginForm']
         form['username'] = user.username
-        form['password'] = 'myprecious'
+        form['password'] = 'example'
         # Submits
         res = form.submit().follow()
         assert res.status_code == 200
@@ -31,7 +29,7 @@ class TestLoggingIn:
         # Fills out login form in navbar
         form = res.forms['loginForm']
         form['username'] = user.username
-        form['password'] = 'myprecious'
+        form['password'] = 'example'
         # Submits
         res = form.submit().follow()
         res = testapp.get(url_for('public.logout')).follow()
@@ -58,7 +56,7 @@ class TestLoggingIn:
         # Fills out login form, password incorrect
         form = res.forms['loginForm']
         form['username'] = 'unknown'
-        form['password'] = 'myprecious'
+        form['password'] = 'example'
         # Submits
         res = form.submit()
         # sees error

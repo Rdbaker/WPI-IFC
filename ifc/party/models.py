@@ -5,7 +5,8 @@ from datetime import datetime as dt
 from sqlalchemy.orm import validates
 from titlecase import titlecase
 
-from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from ifc.database import Column, Model, SurrogatePK, db, reference_col, \
+    relationship
 from ifc.constants import fraternityList
 
 
@@ -51,13 +52,18 @@ class Party(SurrogatePK, Model):
     @validates('fraternity', 'creator')
     def validate_fraternity(self, key, field):
         """Ensures that the creator is part of the fraternity"""
-        if self.creator is not None and self.fraternity is not None:
-            assert self.creator.fraternity == self.fraternity, 'Party creator cannot belong to a different fraternity'
+        if key is 'creator' and self.fraternity is not None:
+            assert field.fraternity == self.fraternity, \
+                'Party creator cannot belong to a different fraternity'
+        elif key is 'fraternity' and self.creator is not None:
+            assert self.creator.fraternity == field, \
+                'Party creator cannot belong to a different fraternity'
         return field
 
     def is_on_guest_list(self, guest_name):
         """Validates whether or not the guest is on the party list."""
-        return guest_name.lower() in [guest.name.lower() for guest in self.guests]
+        return guest_name.lower() in [guest.name.lower()
+                                      for guest in self.guests]
 
     @property
     def male_guests(self):
@@ -97,14 +103,16 @@ class Guest(SurrogatePK, Model):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return '<Guest({name} at {party})>'.format(name=self.name, party=self.party.name)
+        return '<Guest({name} at {party})>'.format(name=self.name,
+                                                   party=self.party.name)
 
     @validates('name', 'party')
     def validate_name_unique_to_party(self, key, field):
         """Ensures that the guest is not already added to the party list"""
         if not (self.name is None and self.party is None):
             if key == 'name':
-                assert not self.party.is_on_guest_list(field), 'That guest is already on this party list'
+                assert not self.party.is_on_guest_list(field), \
+                    'That guest is already on this party list'
                 assert len(field) > 3, 'That guest needs a real name.'
         return field
 

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Factories to help in tests."""
+from datetime import date, timedelta as td
 from factory import PostGenerationMethodCall, Sequence
 from factory.alchemy import SQLAlchemyModelFactory
 
 from ifc.database import db
-from ifc.user.models import User, Preuser, Role, Fraternity
+from ifc.models import User, Preuser, Role, Fraternity, Party, Guest
 
 
 class BaseFactory(SQLAlchemyModelFactory):
@@ -58,3 +59,20 @@ class FratFactory(BaseFactory):
 
     class Meta:
         model = Fraternity
+
+
+class PartyFactory(BaseFactory):
+
+    name = 'Cool Party, Bro'
+    date = date.today() + td(days=1)
+
+    class Meta:
+        model = Party
+
+
+class GuestFactory(BaseFactory):
+    name = Sequence(lambda n: 'guest {0}'.format(n))
+    is_male = True
+
+    class Meta:
+        model = Guest

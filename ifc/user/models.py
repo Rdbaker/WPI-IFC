@@ -56,8 +56,14 @@ class User(UserMixin, SurrogatePK, Model):
         pre = Preuser.query.filter(Preuser.username == username).first()
         if pre is None:
             raise Forbidden()
+
         role = self.resolve_role_from_preuser(pre)
+        if role is None and 'role_id' in kwargs:
+            role = Role.find_by_id(kwargs['role_id'])
+
         fraternity = self.resolve_frat_from_preuser(pre)
+        if fraternity is None and 'fraternity_id' in kwargs:
+            fraternity = Fraternity.find_by_id(kwargs['fraternity_id'])
 
         # create the user
         db.Model.__init__(
@@ -134,4 +140,6 @@ class User(UserMixin, SurrogatePK, Model):
     @property
     def json_dict(self):
         """Represent the instance as a dict that can be converted to JSON."""
-        return {'username': self.username, 'first_name': self.first_name, 'last_name': self.last_name, 'full_name': self.full_name, 'id': self.id}
+        return {'username': self.username, 'first_name': self.first_name,
+                'last_name': self.last_name, 'full_name': self.full_name,
+                'id': self.id}
