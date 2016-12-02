@@ -21,12 +21,13 @@ def allowed_file(filename):
 @blueprint.route('/', methods=['GET', 'POST'])
 @login_required
 def upload_file():
-    if current_user.is_site_admin:
+    if hasattr(current_user, 'is_site_admin') and current_user.is_site_admin:
         if request.method == 'POST':
-            file = request.files['file']
+            file = request.files.get('file')
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                fpath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+                fpath = os.path.join(current_app.config['UPLOAD_FOLDER'],
+                                     filename)
                 file.save(fpath)
                 ingest_file(fpath)
                 flash('All data successfully ingested!', 'success')
@@ -52,8 +53,10 @@ def ingest_file(file_name):
             brother.pop('email')
             # lol somebody's name was too long so I'm doing this
             brother['first_name'] = brother['first_name'].split()[0][:30]
-            brother['chapter_admin'] = brother.get('chapter_admin', None).lower() == 'true'
-            brother['ifc_admin'] = brother.get('ifc_admin', None).lower() == 'true'
+            brother['chapter_admin'] = brother.get('chapter_admin',
+                                                   None).lower() == 'true'
+            brother['ifc_admin'] = brother.get('ifc_admin',
+                                               None).lower() == 'true'
             # placeholder logic to test, normally these are columns
             if brother['username'] in ['rdbaker', 'frlee']:
                 brother['chapter_admin'] = True

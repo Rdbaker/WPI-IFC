@@ -25,7 +25,7 @@ def parties():
 def newparty():
     """Form to create a new party."""
     if current_user.can_create_party:
-        return render_template('party/new.html', form=forms.NewPartyForm(user=current_user))
+        return render_template('party/new.html', form=forms.NewPartyForm())
     else:
         raise Forbidden()
 
@@ -156,6 +156,10 @@ def add_guest(party_id):
             return res
         except AssertionError as e:
             res = jsonify(error=e.message)
+            res.status_code = 400
+            return res
+        except KeyError:
+            res = jsonify(error="name and is_male are required fields.")
             res.status_code = 400
             return res
     else:

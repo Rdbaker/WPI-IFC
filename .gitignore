@@ -58,3 +58,4 @@ node_modules
 
 # ignore test csv files
 *.csv
+tests/**/.cache

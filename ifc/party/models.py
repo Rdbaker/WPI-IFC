@@ -127,11 +127,13 @@ class Guest(SurrogatePK, Model):
     def leave_party(self):
         """The logic for a guest leaving the party."""
         self.is_at_party = False
-        self.left_party_at = dt.utcnow()
+        if self.left_party_at is None:
+            self.left_party_at = dt.utcnow()
         self.save()
 
     def enter_party(self):
         """The logic for a guest entering a party."""
         self.is_at_party = True
-        self.entered_party_at = dt.utcnow()
+        if self.entered_party_at is None:
+            self.entered_party_at = dt.utcnow()
         self.save()
