@@ -82,6 +82,7 @@ class Party(SurrogatePK, Model):
 
     def end(self):
         """Ok, that's enough PARTY'S OVER."""
+        assert self.started, 'A party cannot end before it begins.'
         self.ended = True
         self.save()
 

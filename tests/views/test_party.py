@@ -282,6 +282,16 @@ class TestPartyEndStartView(BaseViewTest):
         assert party.started
         assert party.ended
 
+    def test_cannot_end_before_start(self, admin, testapp, party):
+        """Tests that trying to end a party before it starts shows an error."""
+        self.login(admin, testapp)
+        assert not party.started
+        assert not party.ended
+        res = testapp.post('/parties/{}/end'.format(party.id)).follow()
+        assert not party.started
+        assert not party.ended
+        assert 'cannot end' in res
+
 
 class TestDeletePartyView(BaseViewTest):
     """Test the [DELETE] /parties/id endpoint."""

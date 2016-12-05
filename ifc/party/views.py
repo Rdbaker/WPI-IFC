@@ -89,7 +89,10 @@ def start_party(id):
 def end_party(id):
     party = Party.find_or_404(id)
     if current_user.can_delete_party(party):
-        party.end()
+        try:
+            party.end()
+        except AssertionError as ex:
+            flash(ex.message, 'danger')
         return redirect(url_for('parties.parties'))
     else:
         raise Forbidden()

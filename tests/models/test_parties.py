@@ -32,3 +32,24 @@ class TestParty:
         """Test the party.female_guest property."""
         assert party.female_guests == []
         assert other_party.female_guests == [other_guest]
+
+    def test_start_party(self, party):
+        """Tests the party.start() method."""
+        assert not party.started
+        party.start()
+        assert party.started
+
+    def test_end_party_before_start(self, party):
+        """Tests the party.end() method before starting the party."""
+        assert not party.started
+        assert not party.ended
+        with pytest.raises(AssertionError):
+            party.end()
+        assert not party.ended
+
+    def test_end_party_after_start(self, party):
+        """Tests the party.end() method."""
+        party.start()
+        assert not party.ended
+        party.end()
+        assert party.ended
