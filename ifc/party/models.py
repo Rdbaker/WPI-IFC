@@ -101,21 +101,19 @@ class Guest(SurrogatePK, Model):
     is_male = Column(db.Boolean(), nullable=False)
     entered_party_at = Column(db.DateTime)
     left_party_at = Column(db.DateTime)
+    __table_args__ = (db.UniqueConstraint('name', 'party_id',
+                                          name='_name_party_uc'),)
 
     def __repr__(self):
         """Represent instance as a unique string."""
         return '<Guest({name} at {party})>'.format(name=self.name,
                                                    party=self.party.name)
 
-    @validates('name', 'party')
-    def validate_name_unique_to_party(self, key, field):
+    @validates('name')
+    def validate_name(self, key, field):
         """Ensures that the guest is not already added to the party list"""
-        if not (self.name is None and self.party is None):
-            if key == 'name':
-                assert not self.party.is_on_guest_list(field), \
-                    'That guest is already on this party list'
-                assert len(field) > 3, 'That guest needs a real name.'
-        return field
+        assert len(field) > 3, 'That guest needs a real name.'
+        return field.lower()
 
     @property
     def json_dict(self):

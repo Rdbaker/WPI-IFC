@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Model unit tests."""
 import pytest
+from sqlalchemy.exc import IntegrityError
 
 from ifc.models import Guest
 
@@ -9,8 +10,9 @@ from ifc.models import Guest
 class TestGuest:
     """Guest tests."""
     def test_name_unique_on_party(self, party, guest):
-        with pytest.raises(AssertionError):
-            Guest.create(name=guest.name, host=guest.host, party=party)
+        with pytest.raises(IntegrityError):
+            Guest.create(name=guest.name, host=guest.host, party=party,
+                         is_male=True)
 
     @pytest.mark.parametrize('guest_name', ['', 'a', 'aa', 'aaa'])
     def test_name_cannot_be_too_short(self, guest_name, user, party):
