@@ -115,6 +115,9 @@ class Guest(SurrogatePK, Model):
                 assert not self.party.is_on_guest_list(field), \
                     'That guest is already on this party list'
                 assert len(field) > 3, 'That guest needs a real name.'
+            else:
+                assert not field.is_on_guest_list(self.name), \
+                    'That guest is already on this party list'
         return field
 
     @property
