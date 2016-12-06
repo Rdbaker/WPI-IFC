@@ -110,14 +110,10 @@ class Guest(SurrogatePK, Model):
     @validates('name', 'party')
     def validate_name_unique_to_party(self, key, field):
         """Ensures that the guest is not already added to the party list"""
-        if not (self.name is None and self.party is None):
-            if key == 'name':
-                assert not self.party.is_on_guest_list(field), \
-                    'That guest is already on this party list'
-                assert len(field) > 3, 'That guest needs a real name.'
-            else:
-                assert not field.is_on_guest_list(self.name), \
-                    'That guest is already on this party list'
+        if key == 'name' and self.party is not None:
+            assert not self.party.is_on_guest_list(field), \
+                'That guest is already on this party list'
+            assert len(field) > 3, 'That guest needs a real name.'
         return field
 
     @property
