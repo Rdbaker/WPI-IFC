@@ -7,7 +7,6 @@ from werkzeug.exceptions import Forbidden
 
 from . import forms
 from .models import Party, Guest
-from ifc.extensions import cache
 from ifc.utils import flash_errors
 
 blueprint = Blueprint('parties', __name__, url_prefix='/parties', static_folder='../static')
@@ -113,12 +112,11 @@ def delete_party(id):
 
 @blueprint.route('/<int:id>/guests', methods=['GET'])
 @login_required
-@cache.cached(timeout=10)
 def get_guest_list(id):
     party = Party.find_or_404(id)
     if current_user.can_view_party(party):
         is_male = request.args.get('is_male', 'true').lower()
-        guests = Guest.query.filter_by(party_id=party.id, is_male=is_male).all()
+        guests = party.male_guests if is_male == 'true' else party.female_guests
         return jsonify(guests=[g.json_dict for g in guests])
     else:
         res = jsonify(error="You can't see the guests of this party")
