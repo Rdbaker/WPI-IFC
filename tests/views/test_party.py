@@ -496,13 +496,11 @@ class TestGuestCreateView(BaseViewTest):
 
     def test_guest_already_on_list(self, user, guest, party, testapp):
         self.login(user, testapp)
-        old_len = len(m.Guest.query.all())
         res = testapp.post_json('/parties/{}/guests'.format(party.id),
                                 {'name': guest.name, 'is_male': True},
                                 status=400)
         assert res.status_code == 400
         assert res.json['error'] == "That guest is already on this party list"
-        assert old_len == len(m.Guest.query.all())
 
     @pytest.mark.parametrize('gname', ['', 'a', 'aa'])
     def test_guest_short_name(self, user, gname, party, testapp):

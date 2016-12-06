@@ -2,6 +2,7 @@
 """Party views."""
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Forbidden
 
 from . import forms
@@ -163,6 +164,10 @@ def add_guest(party_id):
             return res
         except KeyError:
             res = jsonify(error="name and is_male are required fields.")
+            res.status_code = 400
+            return res
+        except IntegrityError:
+            res = jsonify(error='That guest is already on this party list')
             res.status_code = 400
             return res
     else:
