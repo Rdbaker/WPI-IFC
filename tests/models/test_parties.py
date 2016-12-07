@@ -5,13 +5,14 @@ from datetime import date
 import pytest
 
 from ifc.models import Party
+from ifc.utils import InvalidAPIUsage
 
 
 @pytest.mark.usefixtures('db')
 class TestParty:
     """Party tests."""
     def test_fraternity_user_alignment(self, other_frat, user):
-        with pytest.raises(AssertionError):
+        with pytest.raises(InvalidAPIUsage):
             Party.create(name='my party', fraternity=other_frat, creator=user,
                          date=date.today())
 

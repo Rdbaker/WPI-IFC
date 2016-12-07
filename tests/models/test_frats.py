@@ -4,6 +4,7 @@ import pytest
 
 from ifc.constants import fraternityList
 from ifc.models import Fraternity
+from ifc.utils import InvalidAPIUsage
 
 
 @pytest.mark.usefixtures('db')
@@ -14,5 +15,5 @@ class TestFrat:
         assert Fraternity(title=frat_title, capacity=100)
 
     def test_title_validation_errors(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(InvalidAPIUsage):
             Fraternity(title='Sigma Nu', capacity=10)

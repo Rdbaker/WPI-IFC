@@ -2,19 +2,22 @@
 """The app module, containing the app factory function."""
 import os
 
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_admin import Admin
 from flask_sslify import SSLify
 
 import ifc.models as models
 from ifc import public, user, party, ingest
 from ifc.assets import assets
-from ifc.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
+from ifc.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, \
+    login_manager, migrate
 from ifc.settings import ProdConfig
+from ifc.utils import InvalidAPIUsage
 
 
 def create_app(config_object=ProdConfig):
-    """An application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
+    """An application factory, as explained here:
+        http://flask.pocoo.org/docs/patterns/appfactories/.
 
     :param config_object: The configuration object to use.
     """
@@ -37,7 +40,8 @@ def register_extensions(app):
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
-    admin = Admin(app, name='WPI IFC - Admin Console', template_mode='bootstrap3')
+    admin = Admin(app, name='WPI IFC - Admin Console',
+                  template_mode='bootstrap3')
     csrf_protect.init_app(app)
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
@@ -63,6 +67,12 @@ def register_errorhandlers(app):
         return render_template('{0}.html'.format(error_code)), error_code
     for errcode in [401, 404, 500]:
         app.errorhandler(errcode)(render_error)
+
+    @app.errorhandler(InvalidAPIUsage)
+    def handle_invalid_usage(error):
+        """A handler for any endpoint that raises an InvalidUsage exception"""
+        return jsonify(error.to_dict()), error.status_code
+
     return None
 
 
@@ -74,4 +84,5 @@ def register_admin(admin):
     admin.add_view(models.PreuserModelView(models.Preuser, db.session))
     admin.add_view(models.RoleModelView(models.Role, db.session))
     admin.index_view.is_accessible = models.AdminModelView._is_accessible
-    admin.index_view.inaccessible_callback = models.AdminModelView._inaccessible_callback
+    admin.index_view.inaccessible_callback = \
+        models.AdminModelView._inaccessible_callback

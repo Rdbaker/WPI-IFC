@@ -6,9 +6,10 @@ from sqlalchemy.orm import validates
 from titlecase import titlecase
 
 from ifc import locales
+from ifc.constants import fraternityList
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, \
     relationship
-from ifc.constants import fraternityList
+from ifc.utils import InvalidAPIUsage
 
 
 class Fraternity(SurrogatePK, Model):
@@ -28,8 +29,10 @@ class Fraternity(SurrogatePK, Model):
     @validates('title')
     def validate_title(self, key, title):
         """Validate the title of the fraternity."""
-        assert title in fraternityList, \
-            locales.Error.INVALID_FRAT_NAME_TEMPLATE.format(title)
+        if title not in fraternityList:
+            raise InvalidAPIUsage(payload={'error': locales.Error.
+                                           INVALID_FRAT_NAME_TEMPLATE.
+                                           format(title)})
         return title
 
 
@@ -55,11 +58,15 @@ class Party(SurrogatePK, Model):
     def validate_fraternity(self, key, field):
         """Ensures that the creator is part of the fraternity"""
         if key is 'creator' and self.fraternity is not None:
-            assert field.fraternity == self.fraternity, \
-                locales.Error.PARTY_CREATOR_MISALIGNED
+            if field.fraternity != self.fraternity:
+                raise InvalidAPIUsage(
+                    payload={'error': locales.Error.PARTY_CREATOR_MISALIGNED},
+                    status_code=403)
         elif key is 'fraternity' and self.creator is not None:
-            assert self.creator.fraternity == field, \
-                locales.Error.PARTY_CREATOR_MISALIGNED
+            if self.creator.fraternity != field:
+                raise InvalidAPIUsage(
+                    payload={'error': locales.Error.PARTY_CREATOR_MISALIGNED},
+                    status_code=403)
         return field
 
     def is_on_guest_list(self, guest_name):
@@ -114,7 +121,10 @@ class Guest(SurrogatePK, Model):
     @validates('name')
     def validate_name(self, key, field):
         """Ensures that the guest is not already added to the party list"""
-        assert len(field) > 3, locales.Error.GUEST_NAME_SHORT
+        if len(field) < 3:
+            raise InvalidAPIUsage(payload={'error':
+                                           locales.Error.GUEST_NAME_SHORT},
+                                  status_code=422)
         return field.lower()
 
     @property

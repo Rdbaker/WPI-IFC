@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from ifc.models import Guest
+from ifc.utils import InvalidAPIUsage
 
 
 @pytest.mark.usefixtures('db')
@@ -14,7 +15,7 @@ class TestGuest:
             Guest.create(name=guest.name, host=guest.host, party=party,
                          is_male=True)
 
-    @pytest.mark.parametrize('guest_name', ['', 'a', 'aa', 'aaa'])
+    @pytest.mark.parametrize('guest_name', ['', 'a', 'aa'])
     def test_name_cannot_be_too_short(self, guest_name, user, party):
-        with pytest.raises(AssertionError):
+        with pytest.raises(InvalidAPIUsage):
             Guest.create(name=guest_name, host=user, party=party)

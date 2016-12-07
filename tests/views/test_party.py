@@ -364,13 +364,15 @@ class TestGuestListView(BaseViewTest):
         self.login(other_user, testapp)
         res = testapp.get('/parties/{}/guests'.format(party.id), status=403)
         assert res.status_code == 403
-        assert res.json == {'error': "You can't see the guests of this party"}
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
 
     def test_other_pres_cannot_access(self, other_pres, party, testapp):
         self.login(other_pres, testapp)
         res = testapp.get('/parties/{}/guests'.format(party.id), status=403)
         assert res.status_code == 403
-        assert res.json == {'error': "You can't see the guests of this party"}
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
 
     def test_party_404(self, user, testapp):
         self.login(user, testapp)
@@ -508,8 +510,8 @@ class TestGuestCreateView(BaseViewTest):
         old_len = len(m.Guest.query.all())
         res = testapp.post_json('/parties/{}/guests'.format(party.id),
                                 {'name': gname, 'is_male': True},
-                                status=400)
-        assert res.status_code == 400
+                                status=422)
+        assert res.status_code == 422
         assert res.json['error'] == "That guest needs a real name."
         assert old_len == len(m.Guest.query.all())
 

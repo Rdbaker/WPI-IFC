@@ -9,7 +9,7 @@ from werkzeug.exceptions import Forbidden
 from . import forms
 from .models import Party, Guest
 from ifc import locales
-from ifc.utils import flash_errors
+from ifc.utils import flash_errors, InvalidAPIUsage
 
 blueprint = Blueprint('parties', __name__, url_prefix='/parties',
                       static_folder='../static')
@@ -117,35 +117,29 @@ def delete_party(id):
 @login_required
 def get_guest_list(id):
     party = Party.find_or_404(id)
-    if current_user.can_view_party(party):
-        is_male = request.args.get('is_male', 'true').lower()
-        guests = party.male_guests if is_male == 'true' else party.female_guests
-        return jsonify(guests=[g.json_dict for g in guests])
-    else:
-        res = jsonify(error=locales.Error.CANT_SEE_GUESTS)
-        res.status_code = 403
-        return res
+    if not current_user.can_view_party(party):
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_SEE_GUESTS},
+                              status_code=403)
+    is_male = request.args.get('is_male', 'true').lower()
+    guests = party.male_guests if is_male == 'true' else party.female_guests
+    return jsonify(guests=[g.json_dict for g in guests])
 
 
 @blueprint.route('/<int:party_id>/guests/<int:guest_id>', methods=['DELETE'])
 @login_required
 def delete_guest_from_list(party_id, guest_id):
     party = Party.find_or_404(party_id)
-    if current_user.can_view_party(party):
-        guest = Guest.find_or_404(guest_id)
-        if guest.host == current_user:
-            guest.delete()
-            res = jsonify(message=locales.Success.GUEST_DELETED)
-            res.status_code = 204
-            return res
-        else:
-            res = jsonify(error=locales.Error.NOT_GUESTS_HOST)
-            res.status_code = 403
-            return res
-    else:
-        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
-        res.status_code = 403
-        return res
+    if not current_user.can_view_party(party):
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_EDIT_GUESTS},
+                              status_code=403)
+    guest = Guest.find_or_404(guest_id)
+    if guest.host != current_user:
+        raise InvalidAPIUsage(payload={'error': locales.Error.NOT_GUESTS_HOST},
+                              status_code=403)
+    guest.delete()
+    res = jsonify(message=locales.Success.GUEST_DELETED)
+    res.status_code = 204
+    return res
 
 
 @blueprint.route('/<int:party_id>/guests', methods=['POST'])
@@ -161,22 +155,15 @@ def add_guest(party_id):
             res = jsonify(guest=guest.json_dict)
             res.status_code = 201
             return res
-        except AssertionError as e:
-            res = jsonify(error=e.message)
-            res.status_code = 400
-            return res
         except KeyError:
-            res = jsonify(error=locales.Error.GUEST_REQUIRED_FIELDS)
-            res.status_code = 400
-            return res
+            raise InvalidAPIUsage(payload={'error':
+                                           locales.Error.GUEST_REQUIRED_FIELDS})
         except IntegrityError:
-            res = jsonify(error=locales.Error.GUEST_ALREADY_ON_LIST)
-            res.status_code = 400
-            return res
+            raise InvalidAPIUsage(payload={'error':
+                                           locales.Error.GUEST_ALREADY_ON_LIST})
     else:
-        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
-        res.status_code = 403
-        return res
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_EDIT_GUESTS},
+                              status_code=403)
 
 
 @blueprint.route('/<int:party_id>/guests/<int:guest_id>',
@@ -184,20 +171,18 @@ def add_guest(party_id):
 @login_required
 def switch_guest_occupancy(party_id, guest_id):
     party = Party.find_or_404(party_id)
-    if current_user.can_view_party(party):
-        guest = Guest.find_or_404(guest_id)
-        if guest.is_at_party:
-            guest.leave_party()
-        else:
-            guest.enter_party()
-        if guest.is_at_party:
-            message = locales.Success.GUEST_CHECKED_IN
-        else:
-            message = locales.Success.GUEST_CHECKED_OUT
-        res = jsonify(message=message)
-        res.status_code = 202
-        return res
+    if not current_user.can_view_party(party):
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_EDIT_GUESTS},
+                              status_code=403)
+    guest = Guest.find_or_404(guest_id)
+    if guest.is_at_party:
+        guest.leave_party()
     else:
-        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
-        res.status_code = 403
-        return res
+        guest.enter_party()
+    if guest.is_at_party:
+        message = locales.Success.GUEST_CHECKED_IN
+    else:
+        message = locales.Success.GUEST_CHECKED_OUT
+    res = jsonify(message=message)
+    res.status_code = 202
+    return res
