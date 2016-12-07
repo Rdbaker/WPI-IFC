@@ -4,6 +4,7 @@ from flask_login import UserMixin
 from sqlalchemy.orm import validates
 from werkzeug.exceptions import Forbidden
 
+from ifc import locales
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
 from ifc.extensions import bcrypt
 from ifc.admin.models import Preuser
@@ -28,7 +29,8 @@ class Role(SurrogatePK, Model):
     @validates('title')
     def validate_title(self, key, title):
         """Validate the title of the role."""
-        assert title in ['ifc_admin', 'chapter_admin', 'normal'], 'Invalid role title'
+        assert title in ['ifc_admin', 'chapter_admin', 'normal'], \
+            locales.Error.INVALID_ROLE
         return title
 
 
@@ -97,8 +99,9 @@ class User(UserMixin, SurrogatePK, Model):
             return Role.query.filter(Role.title == 'normal').first()
 
     def resolve_frat_from_preuser(self, pre):
-        """Figures out what the fraternity is from the preregistered-user model."""
-        return Fraternity.query.filter(Fraternity.title == pre.fraternity_name).first()
+        """Finds the fraternity from the preregistered-user model."""
+        return Fraternity.query.filter(
+            Fraternity.title == pre.fraternity_name).first()
 
     @property
     def full_name(self):

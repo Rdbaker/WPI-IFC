@@ -3,14 +3,16 @@
 import csv
 import os
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for,\
+    flash, current_app
 from flask_login import login_required, current_user
 from werkzeug import secure_filename
 from werkzeug.exceptions import Forbidden
 
-import ifc.models as m
+from ifc import locales, models as m
 
-blueprint = Blueprint('ingest', __name__, url_prefix='/ingest', static_folder='../static')
+blueprint = Blueprint('ingest', __name__, url_prefix='/ingest',
+                      static_folder='../static')
 
 
 def allowed_file(filename):
@@ -30,7 +32,7 @@ def upload_file():
                                      filename)
                 file.save(fpath)
                 ingest_file(fpath)
-                flash('All data successfully ingested!', 'success')
+                flash(locales.Successes.DATA_INGESTED, 'success')
                 return redirect(url_for('public.home'))
         return render_template('ingest/index.html')
     else:
@@ -49,7 +51,8 @@ def ingest_file(file_name):
             if '@wpi.edu' not in brother['email']:
                 continue
             # strip '@wpi.edu' from the email, we just want the username
-            brother['username'] = brother['email'][:brother['email'].index('@')].lower()
+            brother['username'] = \
+                brother['email'][:brother['email'].index('@')].lower()
             brother.pop('email')
             # lol somebody's name was too long so I'm doing this
             brother['first_name'] = brother['first_name'].split()[0][:30]
@@ -65,6 +68,7 @@ def ingest_file(file_name):
 
         # delete users with no pre-registration user model
         for user in m.User.query.all():
-            preuser = m.Preuser.query.filter( m.Preuser.username == user.username).first()
+            preuser = m.Preuser.query.filter(
+                m.Preuser.username == user.username).first()
             if preuser is None:
                 user.delete()

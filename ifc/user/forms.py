@@ -4,18 +4,22 @@ from flask_wtf import Form
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, EqualTo, Length
 
+from ifc import locales
+
 from .models import User
 
 
 class RegisterForm(Form):
     """Register form."""
 
-    username = StringField('Username',
+    username = StringField(locales.FormConstants.USERNAME,
                            validators=[DataRequired(), Length(min=3, max=25)])
-    password = PasswordField('Password',
+    password = PasswordField(locales.FormConstants.PASSWORD,
                              validators=[DataRequired(), Length(min=6, max=40)])
-    confirm = PasswordField('Verify password',
-                            [DataRequired(), EqualTo('password', message='Passwords must match')])
+    confirm = PasswordField(
+        locales.FormConstants.VERIFY_PW,
+        [DataRequired(),
+         EqualTo('password', message=locales.Error.BAD_PW_VERIFICATION)])
 
     def __init__(self, *args, **kwargs):
         """Create instance."""
@@ -30,6 +34,6 @@ class RegisterForm(Form):
         user = User.query.filter_by(username=self.username.data).first()
         print(user)
         if user:
-            self.username.errors.append('Username already registered')
+            self.username.errors.append(locales.Error.USERNAME_TAKEN)
             return False
         return True

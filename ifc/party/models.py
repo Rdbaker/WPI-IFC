@@ -5,6 +5,7 @@ from datetime import datetime as dt
 from sqlalchemy.orm import validates
 from titlecase import titlecase
 
+from ifc import locales
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, \
     relationship
 from ifc.constants import fraternityList
@@ -27,7 +28,8 @@ class Fraternity(SurrogatePK, Model):
     @validates('title')
     def validate_title(self, key, title):
         """Validate the title of the fraternity."""
-        assert title in fraternityList, 'Invalid Fraternity Name' + title
+        assert title in fraternityList, \
+            locales.Error.INVALID_FRAT_NAME_TEMPLATE.format(title)
         return title
 
 
@@ -54,10 +56,10 @@ class Party(SurrogatePK, Model):
         """Ensures that the creator is part of the fraternity"""
         if key is 'creator' and self.fraternity is not None:
             assert field.fraternity == self.fraternity, \
-                'Party creator cannot belong to a different fraternity'
+                locales.Error.PARTY_CREATOR_MISALIGNED
         elif key is 'fraternity' and self.creator is not None:
             assert self.creator.fraternity == field, \
-                'Party creator cannot belong to a different fraternity'
+                locales.Error.PARTY_CREATOR_MISALIGNED
         return field
 
     def is_on_guest_list(self, guest_name):
@@ -82,7 +84,7 @@ class Party(SurrogatePK, Model):
 
     def end(self):
         """Ok, that's enough PARTY'S OVER."""
-        assert self.started, 'A party cannot end before it begins.'
+        assert self.started, locales.Error.PARTY_END_BEFORE_START
         self.ended = True
         self.save()
 
@@ -112,7 +114,7 @@ class Guest(SurrogatePK, Model):
     @validates('name')
     def validate_name(self, key, field):
         """Ensures that the guest is not already added to the party list"""
-        assert len(field) > 3, 'That guest needs a real name.'
+        assert len(field) > 3, locales.Error.GUEST_NAME_SHORT
         return field.lower()
 
     @property

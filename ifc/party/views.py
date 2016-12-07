@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 """Party views."""
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, \
+    url_for, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Forbidden
 
 from . import forms
 from .models import Party, Guest
+from ifc import locales
 from ifc.utils import flash_errors
 
-blueprint = Blueprint('parties', __name__, url_prefix='/parties', static_folder='../static')
+blueprint = Blueprint('parties', __name__, url_prefix='/parties',
+                      static_folder='../static')
 
 
 @blueprint.route('/')
@@ -42,7 +45,7 @@ def createparty():
                 date=form.date.data,
                 fraternity=current_user.fraternity,
                 creator=current_user)
-            flash('Party created.', 'success')
+            flash(locales.Success.PARTY_CREATED, 'success')
             return redirect(url_for('parties.parties'))
         else:
             flash_errors(form)
@@ -119,7 +122,7 @@ def get_guest_list(id):
         guests = party.male_guests if is_male == 'true' else party.female_guests
         return jsonify(guests=[g.json_dict for g in guests])
     else:
-        res = jsonify(error="You can't see the guests of this party")
+        res = jsonify(error=locales.Error.CANT_SEE_GUESTS)
         res.status_code = 403
         return res
 
@@ -132,15 +135,15 @@ def delete_guest_from_list(party_id, guest_id):
         guest = Guest.find_or_404(guest_id)
         if guest.host == current_user:
             guest.delete()
-            res = jsonify(message="Successfully deleted guest")
+            res = jsonify(message=locales.Success.GUEST_DELETED)
             res.status_code = 204
             return res
         else:
-            res = jsonify(error="You can't edit guests you didn't add")
+            res = jsonify(error=locales.Error.NOT_GUESTS_HOST)
             res.status_code = 403
             return res
     else:
-        res = jsonify(error="You can't edit the guests of this party")
+        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
         res.status_code = 403
         return res
 
@@ -163,20 +166,21 @@ def add_guest(party_id):
             res.status_code = 400
             return res
         except KeyError:
-            res = jsonify(error="name and is_male are required fields.")
+            res = jsonify(error=locales.Error.GUEST_REQUIRED_FIELDS)
             res.status_code = 400
             return res
         except IntegrityError:
-            res = jsonify(error='That guest is already on this party list')
+            res = jsonify(error=locales.Error.GUEST_ALREADY_ON_LIST)
             res.status_code = 400
             return res
     else:
-        res = jsonify(error="You can't edit the guests of this party")
+        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
         res.status_code = 403
         return res
 
 
-@blueprint.route('/<int:party_id>/guests/<int:guest_id>', methods=['PUT', 'PATCH'])
+@blueprint.route('/<int:party_id>/guests/<int:guest_id>',
+                 methods=['PUT', 'PATCH'])
 @login_required
 def switch_guest_occupancy(party_id, guest_id):
     party = Party.find_or_404(party_id)
@@ -186,11 +190,14 @@ def switch_guest_occupancy(party_id, guest_id):
             guest.leave_party()
         else:
             guest.enter_party()
-        message = "Successfully checked in guest" if guest.is_at_party else "Successfully checked out guest"
+        if guest.is_at_party:
+            message = locales.Success.GUEST_CHECKED_IN
+        else:
+            message = locales.Success.GUEST_CHECKED_OUT
         res = jsonify(message=message)
         res.status_code = 202
         return res
     else:
-        res = jsonify(error="You can't edit the guests of this party")
+        res = jsonify(error=locales.Error.CANT_EDIT_GUESTS)
         res.status_code = 403
         return res

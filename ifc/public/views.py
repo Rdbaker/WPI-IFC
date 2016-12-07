@@ -3,6 +3,7 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
+from ifc import locales
 from ifc.extensions import login_manager
 from ifc.public.forms import LoginForm
 from ifc.user.forms import RegisterForm
@@ -26,8 +27,9 @@ def home():
     if request.method == 'POST':
         if form.validate_on_submit():
             login_user(form.user)
-            flash('You are logged in.', 'success')
-            redirect_url = request.args.get('next') or url_for('parties.parties')
+            flash(locales.Success.LOGIN_SUCCESS, 'success')
+            redirect_url = request.args.get('next') or \
+                url_for('parties.parties')
             return redirect(redirect_url)
         else:
             flash_errors(form)
@@ -39,7 +41,7 @@ def home():
 def logout():
     """Logout."""
     logout_user()
-    flash('You are logged out.', 'info')
+    flash(locales.Success.LOGOUT_SUCCESS, 'info')
     return redirect(url_for('public.home'))
 
 
@@ -48,8 +50,9 @@ def register():
     """Register new user."""
     form = RegisterForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
-        User.create(username=form.username.data, password=form.password.data, active=True)
-        flash('Thank you for registering. You can now log in.', 'success')
+        User.create(username=form.username.data, password=form.password.data,
+                    active=True)
+        flash(locales.Success.REGISTER_SUCCESS, 'success')
         return redirect(url_for('public.home'))
     else:
         flash_errors(form)
