@@ -47,3 +47,6 @@ titlecase==0.8.1
 
 # use SSL in production (heroku only)
 Flask-SSLify==0.1.5
+
+# performance monitoring
+newrelic==2.74.0.54
