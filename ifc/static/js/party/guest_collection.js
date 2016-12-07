@@ -9,7 +9,7 @@
     },
 
     url: function() {
-      return base_url + '/guests?is_male=' + this.is_male;
+      return this.is_male ? base_url + '/guests/males' : base_url + '/guests/females';
     },
 
     parse: function(res) {

@@ -9,6 +9,7 @@ from werkzeug.exceptions import Forbidden
 from . import forms
 from .models import Party, Guest
 from ifc import locales
+from ifc.extensions import cache
 from ifc.utils import flash_errors, InvalidAPIUsage
 
 blueprint = Blueprint('parties', __name__, url_prefix='/parties',
@@ -123,6 +124,28 @@ def get_guest_list(id):
     is_male = request.args.get('is_male', 'true').lower()
     guests = party.male_guests if is_male == 'true' else party.female_guests
     return jsonify(guests=[g.json_dict for g in guests])
+
+
+@blueprint.route('/<int:id>/guests/males', methods=['GET'])
+@cache.cached(timeout=10)
+@login_required
+def get_men_guest_list(id):
+    party = Party.find_or_404(id)
+    if not current_user.can_view_party(party):
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_SEE_GUESTS},
+                              status_code=403)
+    return jsonify(guests=[g.json_dict for g in party.male_guests])
+
+
+@blueprint.route('/<int:id>/guests/females', methods=['GET'])
+@cache.cached(timeout=10)
+@login_required
+def get_women_guest_list(id):
+    party = Party.find_or_404(id)
+    if not current_user.can_view_party(party):
+        raise InvalidAPIUsage(payload={'error': locales.Error.CANT_SEE_GUESTS},
+                              status_code=403)
+    return jsonify(guests=[g.json_dict for g in party.female_guests])
 
 
 @blueprint.route('/<int:party_id>/guests/<int:guest_id>', methods=['DELETE'])

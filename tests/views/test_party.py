@@ -396,6 +396,114 @@ class TestGuestListView(BaseViewTest):
                                          party.female_guests)
 
 
+class TestMenGuestListView(BaseViewTest):
+    """Tests the /parties/id/guests/males endpoint."""
+    def test_no_login(self, testapp):
+        res = testapp.get('/parties/1/guests/males', status=401)
+        assert res.status_code == 401
+
+    def test_user_can_access(self, user, party, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_pres_can_access(self, president, party, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_admin_can_access(self, admin, party, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_other_user_cannot_access(self, other_user, party, testapp):
+        self.login(other_user, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id),
+                          status=403)
+        assert res.status_code == 403
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
+
+    def test_other_pres_cannot_access(self, other_pres, party, testapp):
+        self.login(other_pres, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id),
+                          status=403)
+        assert res.status_code == 403
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
+
+    def test_party_404(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/1/guests/males', status=404)
+        assert res.status_code == 404
+
+    def test_guest_list_returns_males_only(self, user, guest, party,
+                                           testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/{}/guests/males'.format(party.id))
+        assert res.status_code == 200
+        assert res.json['guests'] == map(lambda x: x.json_dict,
+                                         party.male_guests)
+
+
+class TestWomenGuestListView(BaseViewTest):
+    """Tests the /parties/id/guests/females endpoint."""
+    def test_no_login(self, testapp):
+        res = testapp.get('/parties/1/guests/females', status=401)
+        assert res.status_code == 401
+
+    def test_user_can_access(self, user, party, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_pres_can_access(self, president, party, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_admin_can_access(self, admin, party, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id))
+        assert res.status_code == 200
+        assert res.json == {'guests': []}
+
+    def test_other_user_cannot_access(self, other_user, party, testapp):
+        self.login(other_user, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id),
+                          status=403)
+        assert res.status_code == 403
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
+
+    def test_other_pres_cannot_access(self, other_pres, party, testapp):
+        self.login(other_pres, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id),
+                          status=403)
+        assert res.status_code == 403
+        assert res.json == {'error': "You can't see the guests of this party",
+                            'message': None}
+
+    def test_party_404(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/1/guests/females', status=404)
+        assert res.status_code == 404
+
+    def test_guest_list_returns_males_only(self, user, guest, party,
+                                           testapp):
+        self.login(user, testapp)
+        res = testapp.get('/parties/{}/guests/females'.format(party.id))
+        assert res.status_code == 200
+        assert res.json['guests'] == map(lambda x: x.json_dict,
+                                         party.female_guests)
+
+
 class TestDeleteGuestView(BaseViewTest):
     """Tests the [DELETE] /parties/id/guests/guest_id endpoint."""
     def test_no_login(self, testapp):
