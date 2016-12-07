@@ -29,9 +29,9 @@ class AdminModelView(ModelView):
 
 
 class UserModelView(AdminModelView):
-    column_exclude_list = ['password']
+    column_exclude_list = ['password', 'is_admin']
     column_searchable_list = ['username', 'first_name', 'last_name']
-    form_excluded_columns = ['password']
+    form_excluded_columns = ['password', 'is_admin']
 
 
 class RoleModelView(AdminModelView):

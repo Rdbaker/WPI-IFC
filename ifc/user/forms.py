@@ -32,7 +32,6 @@ class RegisterForm(Form):
         if not initial_validation:
             return False
         user = User.query.filter_by(username=self.username.data).first()
-        print(user)
         if user:
             self.username.errors.append(locales.Error.USERNAME_TAKEN)
             return False
