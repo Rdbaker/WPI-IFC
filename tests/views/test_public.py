@@ -3,11 +3,23 @@
 
 See: http://webtest.readthedocs.org/
 """
+import os
+import subprocess
+import unittest
+
 from flask import url_for
 
 from ifc.user.models import User
 
 from tests.utils import BaseViewTest
+
+
+VERSION_DIR = os.path.dirname(
+    os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..')))
+VERSION_FILE = os.path.join(VERSION_DIR, "__init__.py")
+
+
+MASTER_BRANCH = 'master'
 
 
 class TestLoggingIn:
@@ -203,3 +215,31 @@ class TestAbout:
     def test_credit_where_its_due(self, testapp):
         res = testapp.get('/about/')
         assert 'Ryan Baker' in res
+
+
+class TestStatus:
+    """Tests for the /status endpoint."""
+
+    def test_has_correct_keys(self, testapp):
+        res = testapp.get('/status')
+        assert sorted(res.json.keys()) == ['version']
+
+    def test_has_expected_values(self, testapp):
+        res = testapp.get('/status')
+        # NOTE: don't import the version and render it here, this process of
+        # bumping the version should be very much on purpose
+        assert res.json['version'] == '1.0.0'
+
+
+class VersionTest(unittest.TestCase):
+
+    def test_version_bump(self):
+        repository_modified = (subprocess.call(['git', 'diff', '--quiet',
+                                                MASTER_BRANCH]) == 1)
+        if repository_modified:
+            version_bumped = (subprocess.call(
+                ['git', 'diff', '--quiet', MASTER_BRANCH, VERSION_FILE]) == 1)
+            self.assertTrue(version_bumped,
+                            "This repository has code changes from branch %s, "
+                            "but %s is unchanged."
+                            % (MASTER_BRANCH, VERSION_FILE))

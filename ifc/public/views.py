@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, \
     url_for, jsonify
 from flask_login import login_required, login_user, logout_user
 
-from ifc import locales
+from ifc import locales, __version__
 from ifc.extensions import login_manager
 from ifc.public.forms import LoginForm
 from ifc.user.forms import RegisterForm
@@ -71,5 +71,5 @@ def about():
 def status():
     """App status info."""
     return jsonify({
-        'version': '1.0.0'
+        'version': __version__
     })
