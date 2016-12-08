@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, \
+    url_for, jsonify
 from flask_login import login_required, login_user, logout_user
 
 from ifc import locales
@@ -64,3 +65,11 @@ def about():
     """About page."""
     form = LoginForm(request.form)
     return render_template('public/about.html', form=form)
+
+
+@blueprint.route('/status')
+def status():
+    """App status info."""
+    return jsonify({
+        'version': '1.0.0'
+    })

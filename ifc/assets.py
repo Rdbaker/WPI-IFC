@@ -3,17 +3,19 @@
 from flask_assets import Bundle, Environment
 
 css = Bundle(
-    'libs/bootstrap/dist/css/bootstrap.css',
+    'libs/bootstrap/dist/css/bootstrap.min.css',
     'css/style.css',
     filters='cssmin',
     output='public/css/compiled/common.css'
 )
 
 js = Bundle(
-    'libs/underscore/underscore.js',
-    'libs/backbone/backbone.js',
-    'libs/jQuery/dist/jquery.js',
-    'libs/bootstrap/dist/js/bootstrap.js',
+    'libs/underscore/underscore-min.js',
+    'libs/backbone/backbone-min.js',
+    'libs/jQuery/dist/jquery.min.js',
+    'libs/bootstrap/dist/js/bootstrap.min.js',
+    'libs/noty/js/noty/packaged/jquery.noty.packaged.js',
+    'js/version_update.js',
     filters='jsmin',
     output='public/js/compiled/common.js'
 )
@@ -38,7 +40,6 @@ report_coffee = Bundle(
     output='public/js/compiled/reports.js',
     filters=['coffeescript', 'jsmin']
 )
-
 
 
 assets = Environment()
