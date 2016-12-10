@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """User models."""
+import flask
 from flask_login import UserMixin
 from sqlalchemy.orm import validates
 from werkzeug.exceptions import Forbidden
 
 from ifc import locales
-from ifc.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from ifc.database import Column, Model, SurrogatePK, db, reference_col, \
+    relationship
 from ifc.extensions import bcrypt
 from ifc.admin.models import Preuser
-from ifc.party.models import Fraternity
+from ifc.party.models import Fraternity, Party, Guest
 
 
 class Role(SurrogatePK, Model):
@@ -123,6 +125,12 @@ class User(UserMixin, SurrogatePK, Model):
         """True if the user is a chapter admin."""
         return self.role.title == 'chapter_admin'
 
+    def can_delete_party_by_id(self, party_id):
+        """True if the user can delete the given party."""
+        party = Party.find_or_404(party_id)
+        flask.g.party = party
+        return self.can_delete_party(party)
+
     def can_delete_party(self, party):
         """True if the user can delete the given party."""
         return self.is_site_admin or (self.is_chapter_admin and
@@ -133,9 +141,31 @@ class User(UserMixin, SurrogatePK, Model):
         """True if the user can create a party."""
         return self.is_site_admin or self.is_chapter_admin
 
+    def can_view_party_by_id(self, party_id, guest_id=None):
+        """True if the user can view the given party."""
+        party = Party.find_or_404(party_id)
+        if guest_id is not None:
+            guest = Guest.find_or_404(guest_id)
+            flask.g.guest = guest
+        flask.g.party = party
+        return self.can_view_party(party)
+
     def can_view_party(self, party):
         """True if the user can view the guest list of a party"""
         return self.is_site_admin or party.fraternity == self.fraternity
+
+    def can_edit_guest_by_id(self, guest_id, party_id=None):
+        """True if the user can edit the guest."""
+        guest = Guest.find_or_404(guest_id)
+        if party_id is not None:
+            party = Party.find_or_404(party_id)
+            flask.g.party = party
+        flask.g.guest = guest
+        return self.can_edit_guest(guest)
+
+    def can_edit_guest(self, guest):
+        """True if the user can edit the guest."""
+        return guest.host == self
 
     def __repr__(self):
         """Represent instance as a unique string."""

@@ -35,7 +35,7 @@
             <td> {{ party.name }} </td>
             <td> {{ party.date.__format__('%A, %B %d, %Y') }} </td>
             <td>
-              <a href={{ url_for('parties.guest_list', id=party.id) }}>
+              <a href={{ url_for('parties.guest_list', party_id=party.id) }}>
                 <div class="btn btn-info btn-sm">
                   Guests
                 </div>
@@ -44,11 +44,11 @@
             {% if current_user.can_delete_party(party) %}
               <td>
                 {% if not party.started %}
-                <form action={{ url_for('parties.start_party', id=party.id) }} method="post">
+                <form action={{ url_for('parties.start_party', party_id=party.id) }} method="post">
                   <input type="submit" class="btn btn-warning" value="Start Party">
                 </form>
                 {% elif not party.ended %}
-                <form action={{ url_for('parties.end_party', id=party.id) }} method="post">
+                <form action={{ url_for('parties.end_party', party_id=party.id) }} method="post">
                   <input type="submit" class="btn btn-danger" value="End Party">
                 </form>
                 {% else %}
@@ -56,13 +56,13 @@
                 {% endif %}
               </td>
               <td>
-                <form action={{ url_for('parties.delete_party', id=party.id) }} method="post">
+                <form action={{ url_for('parties.delete_party', party_id=party.id) }} method="post">
                   <input type="submit" class="btn btn-danger" value="Delete">
                 </form>
               </td>
             {% endif %}
             <td>
-              <a href={{ url_for('parties.report', id=party.id) }}>
+              <a href={{ url_for('parties.report', party_id=party.id) }}>
                 <div class="btn btn-info btn-sm">
                   <i class="fa fa-icon fa-area-chart"></i>
                 </div>

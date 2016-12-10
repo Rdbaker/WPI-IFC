@@ -14,8 +14,7 @@ from ifc.user.models import User
 from tests.utils import BaseViewTest
 
 
-VERSION_DIR = os.path.dirname(
-    os.path.abspath(os.path.join(os.path.dirname( __file__ ), "ifc")))
+VERSION_DIR = os.path.join(os.getcwd(), "ifc")
 VERSION_FILE = os.path.join(VERSION_DIR, "__init__.py")
 
 
@@ -228,12 +227,14 @@ class TestStatus:
         res = testapp.get('/status')
         # NOTE: don't import the version and render it here, this process of
         # bumping the version should be very much on purpose
-        assert res.json['version'] == '1.0.1'
+        assert res.json['version'] == '1.0.2'
 
 
 class VersionTest(unittest.TestCase):
 
     def test_version_bump(self):
+        print(VERSION_DIR)
+        print(VERSION_FILE)
         repository_modified = (subprocess.call(['git', 'diff', '--quiet',
                                                 MASTER_BRANCH]) == 1)
         if repository_modified:

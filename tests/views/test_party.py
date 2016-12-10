@@ -178,13 +178,13 @@ class TestSinglePartyView(BaseViewTest):
         res = testapp.get('/parties/1', status=404)
         assert res.status_code == 404
 
-    def test_party_post_calls_delete(self, user, testapp):
+    def test_party_post_calls_delete(self, user, party, testapp):
         with mock.patch('ifc.party.views.delete_party') as del_mock:
             self.login(user, testapp)
             del_mock.return_value = ('', 204,)
-            res = testapp.post('/parties/1')
+            res = testapp.post('/parties/{}'.format(party.id))
             assert res.status_code == 204
-            del_mock.assert_called_with(1)
+            del_mock.assert_called_with(party.id)
 
 
 class TestReportView(BaseViewTest):
@@ -365,14 +365,14 @@ class TestGuestListView(BaseViewTest):
         res = testapp.get('/parties/{}/guests'.format(party.id), status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_other_pres_cannot_access(self, other_pres, party, testapp):
         self.login(other_pres, testapp)
         res = testapp.get('/parties/{}/guests'.format(party.id), status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_party_404(self, user, testapp):
         self.login(user, testapp)
@@ -426,7 +426,7 @@ class TestMenGuestListView(BaseViewTest):
                           status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_other_pres_cannot_access(self, other_pres, party, testapp):
         self.login(other_pres, testapp)
@@ -434,7 +434,7 @@ class TestMenGuestListView(BaseViewTest):
                           status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_party_404(self, user, testapp):
         self.login(user, testapp)
@@ -480,7 +480,7 @@ class TestWomenGuestListView(BaseViewTest):
                           status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_other_pres_cannot_access(self, other_pres, party, testapp):
         self.login(other_pres, testapp)
@@ -488,7 +488,7 @@ class TestWomenGuestListView(BaseViewTest):
                           status=403)
         assert res.status_code == 403
         assert res.json == {'error': "You can't see the guests of this party",
-                            'message': None}
+                            'message': 'You do not have permission to do that'}
 
     def test_party_404(self, user, testapp):
         self.login(user, testapp)
@@ -521,19 +521,19 @@ class TestDeleteGuestView(BaseViewTest):
                              status=404)
         assert res.status_code == 404
 
-    def test_other_user_cant_access(self, other_user, party, testapp):
+    def test_other_user_cant_access(self, other_user, party, guest, testapp):
         self.login(other_user, testapp)
-        res = testapp.delete('/parties/{}/guests/1'.format(party.id),
+        res = testapp.delete('/parties/{}/guests/{}'.format(party.id, guest.id),
                              status=403)
         assert res.status_code == 403
-        assert res.json['error'] == "You can't edit the guests of this party"
+        assert res.json['error'] == "You can't edit guests you didn't add"
 
-    def test_other_pres_cant_access(self, other_pres, party, testapp):
+    def test_other_pres_cant_access(self, other_pres, party, guest, testapp):
         self.login(other_pres, testapp)
-        res = testapp.delete('/parties/{}/guests/1'.format(party.id),
+        res = testapp.delete('/parties/{}/guests/{}'.format(party.id, guest.id),
                              status=403)
         assert res.status_code == 403
-        assert res.json['error'] == "You can't edit the guests of this party"
+        assert res.json['error'] == "You can't edit guests you didn't add"
 
     def test_host_can_delete_guest(self, user, guest, party, testapp):
         self.login(user, testapp)
@@ -668,19 +668,21 @@ class TestGuestCheckinView(BaseViewTest):
 
     @pytest.mark.parametrize('method_name', methods)
     def test_other_user_cant_access(self, method_name, other_user, party,
-                                    testapp):
+                                    testapp, guest):
         self.login(other_user, testapp)
-        res = getattr(testapp, method_name)('/parties/{}/guests/1'
-                                            .format(party.id), status=403)
+        res = getattr(testapp, method_name)('/parties/{}/guests/{}'
+                                            .format(party.id, guest.id),
+                                            status=403)
         assert res.status_code == 403
         assert res.json['error'] == "You can't edit the guests of this party"
 
     @pytest.mark.parametrize('method_name', methods)
     def test_other_pres_cant_access(self, method_name, other_pres, party,
-                                    testapp):
+                                    testapp, guest):
         self.login(other_pres, testapp)
-        res = getattr(testapp, method_name)('/parties/{}/guests/1'
-                                            .format(party.id), status=403)
+        res = getattr(testapp, method_name)('/parties/{}/guests/{}'
+                                            .format(party.id, guest.id),
+                                            status=403)
         assert res.status_code == 403
         assert res.json['error'] == "You can't edit the guests of this party"
 
