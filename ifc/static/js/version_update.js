@@ -2,6 +2,8 @@ var current_version = null;
 
 $.get('/status').done(function(res) {
   current_version = res.version;
+  elt = document.getElementById('version-indicator');
+  elt.innerText = current_version;
 });
 
 function closeHandler() {
@@ -15,10 +17,10 @@ function notifyNewVersion() {
     theme: 'relax',
     type: 'error',
     animation: {
-      open: {height: 'toggle'}, // jQuery animate function property object
-      close: {height: 'toggle'}, // jQuery animate function property object
-      easing: 'swing', // easing
-      speed: 500 // opening & closing animation speed
+      open: 'animated fadeInDown',
+      close: 'animated fadeOutUp',
+      easing: 'swing',
+      speed: 500
     },
     callback: { onCloseClick: closeHandler }
   });

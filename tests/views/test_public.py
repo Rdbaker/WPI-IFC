@@ -15,7 +15,7 @@ from tests.utils import BaseViewTest
 
 
 VERSION_DIR = os.path.dirname(
-    os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../..')))
+    os.path.abspath(os.path.join(os.path.dirname( __file__ ), "ifc")))
 VERSION_FILE = os.path.join(VERSION_DIR, "__init__.py")
 
 
@@ -228,7 +228,7 @@ class TestStatus:
         res = testapp.get('/status')
         # NOTE: don't import the version and render it here, this process of
         # bumping the version should be very much on purpose
-        assert res.json['version'] == '1.0.0'
+        assert res.json['version'] == '1.0.1'
 
 
 class VersionTest(unittest.TestCase):
