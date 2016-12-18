@@ -2,13 +2,15 @@
 """Public section, including homepage and signup."""
 from flask import Blueprint, flash, redirect, render_template, request, \
     url_for, jsonify
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
+from werkzeug.exceptions import Forbidden
 
 from ifc import locales, __version__
 from ifc.extensions import login_manager
 from ifc.public.forms import LoginForm
 from ifc.user.forms import RegisterForm
 from ifc.user.models import User
+from ifc.party.models import Fraternity
 from ifc.utils import flash_errors
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
@@ -73,3 +75,16 @@ def status():
     return jsonify({
         'version': __version__
     })
+
+
+@blueprint.route('/change-frat/<int:frat_id>')
+@login_required
+def change_fraternity(frat_id):
+    """Change the user's fraternity, but only if they're an admin."""
+    if not current_user.is_admin:
+        raise Forbidden()
+    frat = Fraternity.find_or_404(frat_id)
+    current_user.update(fraternity=frat)
+    redirect_url = request.referrer if request.referrer else \
+        url_for('parties.parties')
+    return redirect(redirect_url)

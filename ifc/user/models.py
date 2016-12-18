@@ -40,7 +40,8 @@ class User(UserMixin, SurrogatePK, Model):
     """A user of the app."""
 
     __tablename__ = 'users'
-    username = Column(db.String(80), unique=True, nullable=False)
+    email = Column(db.String(100), unique=True, nullable=False)
+    username = Column(db.String(80), nullable=False)
     #: The hashed password
     password = Column(db.String(128), nullable=True)
     first_name = Column(db.String(30), nullable=True)
@@ -55,9 +56,9 @@ class User(UserMixin, SurrogatePK, Model):
 
     parties = relationship('Party', cascade='delete', single_parent=True)
 
-    def __init__(self, username, password=None, **kwargs):
+    def __init__(self, email, password=None, **kwargs):
         """Create instance."""
-        pre = Preuser.query.filter(Preuser.username == username).first()
+        pre = Preuser.query.filter(Preuser.email == email).first()
         if pre is None:
             raise Forbidden()
 
@@ -72,7 +73,7 @@ class User(UserMixin, SurrogatePK, Model):
         # create the user
         db.Model.__init__(
             self,
-            username=username,
+            email=email,
             role=role,
             fraternity=fraternity,
             first_name=pre.first_name,
@@ -103,7 +104,8 @@ class User(UserMixin, SurrogatePK, Model):
     def resolve_frat_from_preuser(self, pre):
         """Finds the fraternity from the preregistered-user model."""
         return Fraternity.query.filter(
-            Fraternity.title == pre.fraternity_name).first()
+            Fraternity.title == pre.fraternity_name,
+            Fraternity.school.title == pre.school_title).first()
 
     @property
     def full_name(self):
@@ -111,9 +113,9 @@ class User(UserMixin, SurrogatePK, Model):
         return '{0} {1}'.format(self.first_name, self.last_name)
 
     @property
-    def email(self):
-        """User email derived from username."""
-        return '{0}@wpi.edu'.format(self.username)
+    def username(self):
+        """Username derived from email."""
+        return self.email.split('@')[0]
 
     @property
     def is_site_admin(self):
@@ -124,6 +126,15 @@ class User(UserMixin, SurrogatePK, Model):
     def is_chapter_admin(self):
         """True if the user is a chapter admin."""
         return self.role.title == 'chapter_admin'
+
+    @property
+    def school_name(self):
+        """Gets the shortened school name if there is one, otherwise returns
+        the full name."""
+        if self.fraternity.school.short_title is not None:
+            return self.fraternity.school.short_title
+        else:
+            return self.fraternity.school.title
 
     def can_delete_party_by_id(self, party_id):
         """True if the user can delete the given party."""
@@ -169,7 +180,7 @@ class User(UserMixin, SurrogatePK, Model):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return '<User({username})>'.format(username=self.username)
+        return '<User({email})>'.format(email=self.email)
 
     @property
     def json_dict(self):

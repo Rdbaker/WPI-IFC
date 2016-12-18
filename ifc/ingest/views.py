@@ -39,10 +39,52 @@ def upload_file():
         raise Forbidden()
 
 
+def delete_school_preusers():
+    """This function should ONLY be called where current_user is accessible.
+
+    It will delete all preusers from the DB where their school title matches up
+    with the current_user's school title.
+
+    :return bool: False if some error was raised, else True
+    """
+    try:
+        m.Preuser.query.filter_by(
+            m.Preuser.school_title == current_user.fraternity.school.title)\
+            .delete()
+    except Exception:
+        return False
+    return True
+
+
+def delete_relic_users():
+    """This function should ONLY be called where current_user is accessible.
+
+    It will delete all users from the DB where their school title matches up
+    with the current_user's school title and they do not have a corresponding
+    preuser
+
+    :return bool: False if some error was raised, else True
+    """
+    try:
+        school_users = m.User.query.join(m.User.fraternity)\
+            .join(m.Fraternity.school).filter_by(
+                id=current_user.fraternity.school_id).all()
+        for user in school_users:
+            preuser = m.Preuser.query.filter(
+                m.Preuser.email == user.email,
+                m.Preuser.school_title == current_user.fraternity.school.title)\
+                    .first()
+            if preuser is None:
+                user.delete()
+    except Exception:
+        return False
+    return True
+
+
 def ingest_file(file_name):
     with open(file_name, 'r') as infile:
-        # delete all pre-registration user models
-        m.Preuser.query.delete()
+        # delete all pre-registration user models for the current_user's school
+        delete_school_preusers()
 
         # create all pre-registration user models
         inread = csv.DictReader(infile)
@@ -50,25 +92,14 @@ def ingest_file(file_name):
             # we only want WPI emails
             if '@wpi.edu' not in brother['email']:
                 continue
-            # strip '@wpi.edu' from the email, we just want the username
-            brother['username'] = \
-                brother['email'][:brother['email'].index('@')].lower()
-            brother.pop('email')
+            brother['email'] = brother.pop('email')
             # lol somebody's name was too long so I'm doing this
             brother['first_name'] = brother['first_name'].split()[0][:30]
             brother['chapter_admin'] = brother.get('chapter_admin',
                                                    None).lower() == 'true'
             brother['ifc_admin'] = brother.get('ifc_admin',
                                                None).lower() == 'true'
-            # placeholder logic to test, normally these are columns
-            if brother['username'] in ['rdbaker', 'frlee']:
-                brother['chapter_admin'] = True
-                brother['ifc_admin'] = True
             m.Preuser.create(**brother)
 
         # delete users with no pre-registration user model
-        for user in m.User.query.all():
-            preuser = m.Preuser.query.filter(
-                m.Preuser.username == user.username).first()
-            if preuser is None:
-                user.delete()
+        delete_relic_users()

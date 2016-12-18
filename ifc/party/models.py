@@ -6,7 +6,7 @@ from sqlalchemy.orm import validates
 from titlecase import titlecase
 
 from ifc import locales
-from ifc.constants import fraternityList
+from ifc.constants import greek_letters
 from ifc.database import Column, Model, SurrogatePK, db, reference_col, \
     relationship
 from ifc.utils import InvalidAPIUsage
@@ -16,11 +16,13 @@ class Fraternity(SurrogatePK, Model):
     """A fraternity."""
 
     __tablename__ = 'fraternities'
-    title = Column(db.String(80), unique=True, nullable=False)
+    title = Column(db.String(80), nullable=False)
     capacity = Column(db.Integer(), nullable=False)
     users = relationship('User')
     parties = relationship('Party', cascade='delete', single_parent=True)
     can_have_parties = Column(db.Boolean(), default=True, nullable=False)
+    school_id = reference_col('schools', nullable=False)
+    school = relationship('School')
 
     def __repr__(self):
         """Represent instance as a unique string."""
@@ -29,7 +31,7 @@ class Fraternity(SurrogatePK, Model):
     @validates('title')
     def validate_title(self, key, title):
         """Validate the title of the fraternity."""
-        if title not in fraternityList:
+        if not all([x.lower() in greek_letters for x in title.split()]):
             raise InvalidAPIUsage(payload={'error': locales.Error.
                                            INVALID_FRAT_NAME_TEMPLATE.
                                            format(title)})

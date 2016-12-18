@@ -104,7 +104,6 @@ def get_guest_list(party_id):
 
 
 @blueprint.route('/<int:party_id>/guests/males', methods=['GET'])
-@cache.cached(timeout=10)
 @permission_required('can_view_party_by_id', apply_req_args=True,
                      fail_exc=partial(InvalidAPIUsage, status_code=403,
                                       payload={'error':
@@ -114,7 +113,6 @@ def get_men_guest_list(party_id):
 
 
 @blueprint.route('/<int:party_id>/guests/females', methods=['GET'])
-@cache.cached(timeout=10)
 @permission_required('can_view_party_by_id', apply_req_args=True,
                      fail_exc=partial(InvalidAPIUsage, status_code=403,
                                       payload={'error':

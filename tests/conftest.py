@@ -9,7 +9,7 @@ from ifc.database import db as _db
 from ifc.settings import TestConfig
 
 from .factories import UserFactory, PreuserFactory, RoleFactory, FratFactory, \
-    PartyFactory, GuestFactory
+    PartyFactory, GuestFactory, SchoolFactory
 
 
 @pytest.yield_fixture(scope='function')
@@ -53,7 +53,7 @@ def preuser(db):
 @pytest.fixture
 def other_preuser(db):
     """A preuser for another fraternity."""
-    return PreuserFactory.create(fraternity_name='Zete Psi')
+    return PreuserFactory.create(fraternity_name='Zeta Psi')
 
 
 @pytest.fixture
@@ -81,15 +81,29 @@ def other_pres_pre(db, other_frat):
 
 
 @pytest.fixture
-def frat(db):
-    """A fraternity for the tests."""
-    return FratFactory.create()
+def school(db):
+    """A school for the tests."""
+    return SchoolFactory.create()
 
 
 @pytest.fixture
-def other_frat(db):
+def other_school(db):
+    """Another school for the tests."""
+    return SchoolFactory.create(title='Northeastern University',
+                                short_title='NEU')
+
+
+@pytest.fixture
+def frat(db, school):
+    """A fraternity for the tests."""
+    return FratFactory.create(school=school, school_id=school.id)
+
+
+@pytest.fixture
+def other_frat(db, school):
     """Another fraternity for tests."""
-    return FratFactory.create(title='Zete Psi')
+    return FratFactory.create(title='Zeta Psi', school=school,
+                              school_id=school.id)
 
 
 @pytest.fixture
