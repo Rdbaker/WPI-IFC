@@ -551,6 +551,17 @@ class TestDeleteGuestView(BaseViewTest):
         assert res.json['error'] == "You can't edit guests you didn't add"
         assert old_len == len(m.Guest.query.all())
 
+    def test_cannot_delete_after_party_ended(self, user, guest, party, testapp):
+        self.login(user, testapp)
+        old_len = len(m.Guest.query.all())
+        party.started = True
+        party.ended = True
+        party.save()
+        res = testapp.delete('/parties/{}/guests/{}'.format(party.id, guest.id),
+                             status=409)
+        assert res.status_code == 409
+        assert old_len == len(m.Guest.query.all())
+
 
 class TestGuestCreateView(BaseViewTest):
     """Tests [POST] /parties/id/guests endpoint."""
@@ -641,6 +652,18 @@ class TestGuestCreateView(BaseViewTest):
                                 status=400)
         assert res.status_code == 400
         assert res.json['error'] == "name and is_male are required fields."
+        assert old_len == len(m.Guest.query.all())
+
+    def test_cannot_create_after_party_ended(self, user, guest, party, testapp):
+        self.login(user, testapp)
+        old_len = len(m.Guest.query.all())
+        party.started = True
+        party.ended = True
+        party.save()
+        res = testapp.post_json('/parties/{}/guests'.format(party.id),
+                                {'is_male': True, 'name': 'Foster Lee'},
+                                status=409)
+        assert res.status_code == 409
         assert old_len == len(m.Guest.query.all())
 
 
@@ -745,3 +768,22 @@ class TestGuestCheckinView(BaseViewTest):
         getattr(testapp, method_name)('/parties/{}/guests/{}'
                                       .format(party.id, guest.id))
         assert guest.left_party_at == old_checkout
+
+    @pytest.mark.parametrize('method_name', methods)
+    def test_cannot_checkin_after_party_ended(self, method_name, user, guest,
+                                              party, testapp):
+        self.login(user, testapp)
+        party.started = True
+        party.ended = True
+        party.save()
+        assert not guest.is_at_party
+        assert guest.entered_party_at is None
+        assert guest.left_party_at is None
+        res = getattr(testapp, method_name)('/parties/{}/guests/{}'
+                                            .format(party.id, guest.id),
+                                            status=409)
+        assert res.status_code == 409
+        # assert nothing changed
+        assert not guest.is_at_party
+        assert guest.entered_party_at is None
+        assert guest.left_party_at is None

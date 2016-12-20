@@ -49,7 +49,7 @@
     },
 
     toggleHere: function(e) {
-      if(!window.partyStarted)
+      if(!window.partyStarted || window.partyEnded)
         return;
       // check the guest in/out
       this.model.set('is_at_party', !this.model.get('is_at_party'));

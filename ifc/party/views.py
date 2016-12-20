@@ -10,7 +10,6 @@ from sqlalchemy.exc import IntegrityError
 from . import forms
 from .models import Party, Guest
 from ifc import locales
-from ifc.extensions import cache
 from ifc.utils import flash_errors, InvalidAPIUsage, permission_required
 
 blueprint = Blueprint('parties', __name__, url_prefix='/parties',
@@ -127,6 +126,10 @@ def get_women_guest_list(party_id):
                                       payload={'error':
                                                locales.Error.NOT_GUESTS_HOST}))
 def delete_guest_from_list(party_id, guest_id):
+    if g.party.ended:
+        raise InvalidAPIUsage(status_code=409,
+                              payload={'error':
+                                       locales.Error.PARTY_ENDED_DELETE_GUEST})
     g.guest.delete()
     res = jsonify(message=locales.Success.GUEST_DELETED)
     res.status_code = 204
@@ -139,6 +142,10 @@ def delete_guest_from_list(party_id, guest_id):
                                       payload={'error':
                                                locales.Error.CANT_EDIT_GUESTS}))
 def add_guest(party_id):
+    if g.party.ended:
+        raise InvalidAPIUsage(status_code=409,
+                              payload={'error':
+                                       locales.Error.PARTY_ENDED_ADD_GUEST})
     try:
         guest = Guest.create(name=request.json['name'].lower(),
                              host=current_user,
@@ -162,6 +169,10 @@ def add_guest(party_id):
                                       payload={'error':
                                                locales.Error.CANT_EDIT_GUESTS}))
 def switch_guest_occupancy(party_id, guest_id):
+    if g.party.ended:
+        raise InvalidAPIUsage(status_code=409,
+                              payload={'error':
+                                       locales.Error.PARTY_ENDED_CHECKIN_GUEST})
     guest = Guest.find_or_404(guest_id)
     if guest.is_at_party:
         guest.leave_party()

@@ -22,6 +22,12 @@ class Error(object):
     BAD_PW_VERIFICATION = 'Passwords must match'
     EMAIL_TAKEN = 'Email already registered'
     INVALID_ROLE = 'Invalid role title'
+    PARTY_ENDED = "You can't do that, because the party ended"
+    PARTY_ENDED_TEMPLATE = "You can't {}, because the party ended"
+    PARTY_ENDED_DELETE_GUEST = PARTY_ENDED_TEMPLATE.format('delete any guests')
+    PARTY_ENDED_ADD_GUEST = PARTY_ENDED_TEMPLATE.format('add any guests')
+    PARTY_ENDED_CHECKIN_GUEST = PARTY_ENDED_TEMPLATE\
+        .format('check any guests in or out')
 
 
 class Success(object):

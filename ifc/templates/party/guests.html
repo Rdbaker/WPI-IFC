@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block meta %}
   <meta name="started" content="{{ party.started }}">
+  <meta name="ended" content="{{ party.ended }}">
 {% endblock %}
 {% block css %}
   {% assets "guest_list_css" %}
@@ -27,10 +28,12 @@
           {% else %}
             Men on list: <span id="male-count"></span></div>
           {% endif %}
+        {% if not party.ended %}
         <div id="add-male" class="form-group form-inline">
           <input type="text" class="form-control enter-user-name" id="add-male-name" placeholder="Add Male Guest">
           <button class="btn btn-info add-user-btn" id="add-male-btn"><i class="fa fa-icon fa-plus"></i></button>
         </div>
+        {% endif %}
       </div>
       <div class="col-xs-5 col-md-5 col-xs-offset-1 guest-entry-row">
         <h4 class="add-guest-header">Women</h4>
@@ -40,10 +43,12 @@
           {% else %}
             Women on list: <span id="female-count"></span></div>
           {% endif %}
+        {% if not party.ended %}
         <div id="add-female" class="form-group form-inline">
           <input type="text" class="form-control enter-user-name" id="add-female-name" placeholder="Add Female Guest">
           <button class="btn btn-info add-user-btn" id="add-female-btn"><i class="fa fa-icon fa-plus"></i></button>
         </div>
+        {% endif %}
       </div>
     </div>
     <div class="row">

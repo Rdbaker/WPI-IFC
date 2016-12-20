@@ -23,7 +23,9 @@
       } else {
         this.countElt = $('#female-count');
       }
-      this.render();
+      if(!window.partyEnded) {
+        this.render();
+      }
     },
 
     events: {
