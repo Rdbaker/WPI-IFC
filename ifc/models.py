@@ -61,8 +61,11 @@ class UserModelView(AdminModelView):
 
     @property
     def school_query(self):
-        return User.query.join(User.fraternity).join(Fraternity.school)\
-            .filter_by(id=current_user.fraternity.school_id)
+        if hasattr(current_user, 'is_admin') and current_user.is_admin:
+            return User.query
+        else:
+            return User.query.join(User.fraternity).join(Fraternity.school)\
+                .filter_by(id=current_user.fraternity.school_id)
 
 
 class RoleModelView(SiteAdminModelView):
@@ -74,13 +77,17 @@ class SchoolModelView(SiteAdminModelView):
 
 
 class FraternityModelView(AdminModelView):
+    form_excluded_columns = ['school']
     column_exclude_list = ['school']
     can_delete = False
 
     @property
     def school_query(self):
-        return Fraternity.query.join(Fraternity.school)\
-            .filter_by(id=current_user.fraternity.school_id)
+        if hasattr(current_user, 'is_admin') and current_user.is_admin:
+            return Fraternity.query
+        else:
+            return Fraternity.query.join(Fraternity.school)\
+                .filter_by(id=current_user.fraternity.school_id)
 
 
 class PreuserModelView(AdminModelView):
@@ -91,8 +98,11 @@ class PreuserModelView(AdminModelView):
 
     @property
     def school_query(self):
-        return Preuser.query.filter_by(
-            school_title=current_user.fraternity.school.title)
+        if hasattr(current_user, 'is_admin') and current_user.is_admin:
+            return Preuser.query
+        else:
+            return Preuser.query.filter_by(
+                school_title=current_user.fraternity.school.title)
 
 
 class PartyModelView(AdminModelView):
@@ -101,5 +111,8 @@ class PartyModelView(AdminModelView):
 
     @property
     def school_query(self):
-        return Party.query.join(Party.fraternity).join(Fraternity.school)\
-            .filter_by(id=current_user.fraternity.school_id)
+        if hasattr(current_user, 'is_admin') and current_user.is_admin:
+            return Party.query
+        else:
+            return Party.query.join(Party.fraternity).join(Fraternity.school)\
+                .filter_by(id=current_user.fraternity.school_id)

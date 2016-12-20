@@ -302,7 +302,7 @@ class TestStatus:
         res = testapp.get('/status')
         # NOTE: don't import the version and render it here, this process of
         # bumping the version should be very much on purpose
-        assert res.json['version'] == '1.0.2'
+        assert res.json['version'] == '1.1.0'
 
 
 class TestChangeFrat(BaseViewTest):
