@@ -94,4 +94,6 @@ def register_template_contexts(app):
     """Adds the context processors we want in the Jinja templates."""
     @app.context_processor
     def inject_frats():
-        return dict(fraternities=models.Fraternity.query.all())
+        return dict(fraternities=sorted(
+            models.Fraternity.query.all(),
+            key=lambda f: "{} | {}".format(f.school.title, f.title)))
