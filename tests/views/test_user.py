@@ -21,8 +21,8 @@ class TestUserViews(BaseViewTest):
         assert '/parties/' in res.body
         assert res.follow()
 
-    def test_unauth_me_endpoint(self, testapp):
+    def test_unauth_me_endpoint(self, frat, testapp):
         assert testapp.get('/users/me', status=401)
 
-    def test_unauth_root_endpoint(self, testapp):
+    def test_unauth_root_endpoint(self, frat, testapp):
         assert testapp.get('/users/', status=401)

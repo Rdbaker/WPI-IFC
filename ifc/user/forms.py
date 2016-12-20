@@ -12,8 +12,8 @@ from .models import User
 class RegisterForm(Form):
     """Register form."""
 
-    username = StringField(locales.FormConstants.USERNAME,
-                           validators=[DataRequired(), Length(min=3, max=25)])
+    email = StringField(locales.FormConstants.EMAIL,
+                        validators=[DataRequired(), Length(min=3, max=25)])
     password = PasswordField(locales.FormConstants.PASSWORD,
                              validators=[DataRequired(), Length(min=6, max=40)])
     confirm = PasswordField(
@@ -31,8 +31,8 @@ class RegisterForm(Form):
         initial_validation = super(RegisterForm, self).validate()
         if not initial_validation:
             return False
-        user = User.query.filter_by(username=self.username.data).first()
+        user = User.query.filter_by(email=self.email.data).first()
         if user:
-            self.username.errors.append(locales.Error.USERNAME_TAKEN)
+            self.email.errors.append(locales.Error.EMAIL_TAKEN)
             return False
         return True

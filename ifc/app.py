@@ -26,6 +26,7 @@ def create_app(config_object=ProdConfig):
     register_admin(register_extensions(app))
     register_blueprints(app)
     register_errorhandlers(app)
+    register_template_contexts(app)
     return app
 
 
@@ -40,7 +41,7 @@ def register_extensions(app):
     bcrypt.init_app(app)
     cache.init_app(app)
     db.init_app(app)
-    admin = Admin(app, name='WPI IFC - Admin Console',
+    admin = Admin(app, name='IFC Event List - Admin Console',
                   template_mode='bootstrap3')
     csrf_protect.init_app(app)
     login_manager.init_app(app)
@@ -83,6 +84,14 @@ def register_admin(admin):
     admin.add_view(models.PartyModelView(models.Party, db.session))
     admin.add_view(models.PreuserModelView(models.Preuser, db.session))
     admin.add_view(models.RoleModelView(models.Role, db.session))
+    admin.add_view(models.SchoolModelView(models.School, db.session))
     admin.index_view.is_accessible = models.AdminModelView._is_accessible
     admin.index_view.inaccessible_callback = \
         models.AdminModelView._inaccessible_callback
+
+
+def register_template_contexts(app):
+    """Adds the context processors we want in the Jinja templates."""
+    @app.context_processor
+    def inject_frats():
+        return dict(fraternities=models.Fraternity.query.all())

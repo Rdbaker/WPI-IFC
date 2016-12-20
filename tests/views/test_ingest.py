@@ -14,7 +14,7 @@ class TestIngestViews(BaseViewTest):
         res = testapp.get('/ingest/', status=403)
         assert res.status_code == 403
 
-    def test_ingest_get_inaccessible_not_logged_in(self, testapp):
+    def test_ingest_get_inaccessible_not_logged_in(self, frat, testapp):
         res = testapp.get('/ingest/', status=401)
         assert res.status_code == 401
 
@@ -33,7 +33,7 @@ class TestIngestViews(BaseViewTest):
         res = testapp.post('/ingest/', status=403)
         assert res.status_code == 403
 
-    def test_ingest_post_inaccessible_not_logged_in(self, testapp):
+    def test_ingest_post_inaccessible_not_logged_in(self, frat, testapp):
         res = testapp.post('/ingest/', status=401)
         assert res.status_code == 401
 

@@ -10,11 +10,12 @@ class Preuser(Model):
     """
     __tablename__ = 'preusers'
     id = db.Column(db.Integer, primary_key=True)
-    username = Column(db.String(80))
+    email = Column(db.String(100))
     first_name = Column(db.String(30))
     last_name = Column(db.String(30))
     chapter_admin = Column(db.Boolean())
     ifc_admin = Column(db.Boolean())
+    school_title = Column(db.String(120))
 
     fraternity_name = Column(db.String(80))
 

@@ -17,9 +17,13 @@ class TestUser:
         retrieved = User.find_by_id(user.id)
         assert retrieved == user
 
+    def test_site_admin_is_admin(self, site_admin):
+        """Mostly a sanity check for the site admin in the test suite."""
+        assert site_admin.is_admin
+
     def test_factory(self, db, user):
         """Test user factory."""
-        assert bool(user.username)
+        assert bool(user.email)
         assert user.active is True
         assert user.check_password('example')
 

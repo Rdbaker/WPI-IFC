@@ -30,7 +30,7 @@ class TestLoggingIn:
         res = testapp.get('/')
         # Fills out login form in navbar
         form = res.forms['loginForm']
-        form['username'] = user.username
+        form['email'] = user.email
         form['password'] = 'example'
         # Submits
         res = form.submit().follow()
@@ -41,7 +41,7 @@ class TestLoggingIn:
         res = testapp.get('/')
         # Fills out login form in navbar
         form = res.forms['loginForm']
-        form['username'] = user.username
+        form['email'] = user.email
         form['password'] = 'example'
         # Submits
         res = form.submit().follow()
@@ -55,25 +55,25 @@ class TestLoggingIn:
         res = testapp.get('/')
         # Fills out login form, password incorrect
         form = res.forms['loginForm']
-        form['username'] = user.username
+        form['email'] = user.email
         form['password'] = 'wrong'
         # Submits
         res = form.submit()
         # sees error
         assert 'Invalid password' in res
 
-    def test_sees_error_message_if_username_doesnt_exist(self, user, testapp):
-        """Show error if username doesn't exist."""
+    def test_sees_error_message_if_email_doesnt_exist(self, user, testapp):
+        """Show error if email doesn't exist."""
         # Goes to homepage
         res = testapp.get('/')
         # Fills out login form, password incorrect
         form = res.forms['loginForm']
-        form['username'] = 'unknown'
+        form['email'] = 'unknown'
         form['password'] = 'example'
         # Submits
         res = form.submit()
         # sees error
-        assert 'Unknown user' in res
+        assert 'Unknown email' in res
 
 
 class TestRegistering:
@@ -88,7 +88,7 @@ class TestRegistering:
         res = res.click('Create account')
         # Fills out the form
         form = res.forms['registerForm']
-        form['username'] = preuser2.username
+        form['email'] = preuser2.email
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         # Submits
@@ -103,7 +103,7 @@ class TestRegistering:
         res = testapp.get(url_for('public.register'))
         # Fills out form, but passwords don't match
         form = res.forms['registerForm']
-        form['username'] = 'foobar'
+        form['email'] = 'foobar'
         form['password'] = 'secret'
         form['confirm'] = 'secrets'
         # Submits
@@ -115,21 +115,21 @@ class TestRegistering:
         """Show error if user already registered."""
         # Goes to registration page
         res = testapp.get(url_for('public.register'))
-        # Fills out form, but username is already registered
+        # Fills out form, but email is already registered
         form = res.forms['registerForm']
-        form['username'] = user.username
+        form['email'] = user.email
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         # Submits
         res = form.submit()
         # sees error
-        assert 'Username already registered' in res
+        assert 'Email already registered' in res
 
 
 class TestHome(BaseViewTest):
     """Test the home page."""
 
-    def test_get_without_login(self, testapp):
+    def test_get_without_login(self, frat, testapp):
         res = testapp.get('/')
         assert res.status_code == 200
         assert 'loginForm' in res.forms
@@ -153,10 +153,85 @@ class TestHome(BaseViewTest):
         assert 'loginForm' not in res.forms
 
 
+class TestNavbar(BaseViewTest):
+    """Test the things in the navbar."""
+    def test_admin_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' in res
+
+    def test_admin_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' in res
+
+    def test_ingest_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' in res
+
+    def test_ingest_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' in res
+
+    def test_change_frat_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' in res
+
+
 class TestLogout(BaseViewTest):
     """Test the logout view."""
 
-    def test_logout_without_login(self, testapp):
+    def test_logout_without_login(self, frat, testapp):
         res = testapp.get('/logout/', status=401)
         assert res.status_code == 401
 
@@ -185,7 +260,7 @@ class TestRegister(BaseViewTest):
     def test_register_no_preuser_fails(self, user, testapp):
         res = testapp.get(url_for('public.register'))
         form = res.forms['registerForm']
-        form['username'] = 'something'
+        form['email'] = 'something'
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         res = form.submit(status=403)
@@ -196,7 +271,7 @@ class TestRegister(BaseViewTest):
         # for the new user
         res = testapp.get(url_for('public.register'))
         form = res.forms['registerForm']
-        form['username'] = preuser2.username
+        form['email'] = preuser2.email
         form['password'] = 'secret'
         form['confirm'] = 'secret'
         res = form.submit().follow()
@@ -207,11 +282,11 @@ class TestRegister(BaseViewTest):
 class TestAbout:
     """Tests the about page."""
 
-    def test_has_login_form(self, testapp):
+    def test_has_login_form(self, frat, testapp):
         res = testapp.get('/about/')
         assert 'loginForm' in res.forms
 
-    def test_credit_where_its_due(self, testapp):
+    def test_credit_where_its_due(self, frat, testapp):
         res = testapp.get('/about/')
         assert 'Ryan Baker' in res
 
@@ -227,14 +302,40 @@ class TestStatus:
         res = testapp.get('/status')
         # NOTE: don't import the version and render it here, this process of
         # bumping the version should be very much on purpose
-        assert res.json['version'] == '1.0.2'
+        assert res.json['version'] == '1.1.0'
+
+
+class TestChangeFrat(BaseViewTest):
+    """Tests the /change-frat/<id> endpoint."""
+
+    def test_not_logged_in(self, testapp, frat):
+        """Test that a not logged in user gets a 401."""
+        res = testapp.get('/change-frat/1', status=401)
+        assert res.status_code == 401
+
+    def test_not_site_admin(self, testapp, admin):
+        """Test that a non-site-admin gets a 403."""
+        self.login(admin, testapp)
+        res = testapp.get('/change-frat/1', status=403)
+        assert res.status_code == 403
+
+    def test_frat_not_found(self, testapp, site_admin):
+        """Test that a fraternity that isn't found raises a 404."""
+        self.login(site_admin, testapp)
+        res = testapp.get('/change-frat/20', status=404)
+        assert res.status_code == 404
+
+    def test_successful_update(self, testapp, site_admin, other_frat):
+        self.login(site_admin, testapp)
+        assert site_admin.fraternity_id != other_frat.id
+        res = testapp.get('/change-frat/{}'.format(other_frat.id)).follow()
+        assert res.status_code == 200
+        assert site_admin.fraternity_id == other_frat.id
 
 
 class VersionTest(unittest.TestCase):
 
     def test_version_bump(self):
-        print(VERSION_DIR)
-        print(VERSION_FILE)
         repository_modified = (subprocess.call(['git', 'diff', '--quiet',
                                                 MASTER_BRANCH]) == 1)
         if repository_modified:
