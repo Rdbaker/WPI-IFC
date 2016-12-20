@@ -84,6 +84,7 @@ def register_admin(admin):
     admin.add_view(models.PartyModelView(models.Party, db.session))
     admin.add_view(models.PreuserModelView(models.Preuser, db.session))
     admin.add_view(models.RoleModelView(models.Role, db.session))
+    admin.add_view(models.SchoolModelView(models.School, db.session))
     admin.index_view.is_accessible = models.AdminModelView._is_accessible
     admin.index_view.inaccessible_callback = \
         models.AdminModelView._inaccessible_callback

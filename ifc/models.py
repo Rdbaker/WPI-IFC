@@ -2,7 +2,7 @@
 """The module containing all models in the app"""
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import NotFound
 
 from ifc.school.models import School  # noqa
 from ifc.admin.models import Preuser  # noqa
@@ -23,7 +23,8 @@ class AdminModelView(ModelView):
 
     @staticmethod
     def _inaccessible_callback(*args):
-        raise Unauthorized()
+        """Let's pretend this page doesn't exist."""
+        raise NotFound()
 
     def is_accessible(self):
         """Blocks users that aren't allowed in."""
@@ -46,6 +47,13 @@ class AdminModelView(ModelView):
             return super(AdminModelView, self).get_query()
 
 
+class SiteAdminModelView(AdminModelView):
+    @staticmethod
+    def _is_accessible():
+        return hasattr(current_user, 'is_admin') and \
+            current_user.is_admin
+
+
 class UserModelView(AdminModelView):
     column_exclude_list = ['password', 'is_admin']
     column_searchable_list = ['email', 'first_name', 'last_name']
@@ -57,9 +65,12 @@ class UserModelView(AdminModelView):
             .filter_by(id=current_user.fraternity.school_id)
 
 
-class RoleModelView(AdminModelView):
-    can_delete = False
-    can_edit = False
+class RoleModelView(SiteAdminModelView):
+    pass
+
+
+class SchoolModelView(SiteAdminModelView):
+    pass
 
 
 class FraternityModelView(AdminModelView):
@@ -80,8 +91,8 @@ class PreuserModelView(AdminModelView):
 
     @property
     def school_query(self):
-        return Preuser.query.filter(
-            Preuser.school_title == current_user.fraternity.school.title)
+        return Preuser.query.filter_by(
+            school_title=current_user.fraternity.school.title)
 
 
 class PartyModelView(AdminModelView):

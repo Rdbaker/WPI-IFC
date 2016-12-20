@@ -57,6 +57,13 @@ def other_preuser(db):
 
 
 @pytest.fixture
+def other_school_pre(db, other_school_frat):
+    """A preuser from another school."""
+    return PreuserFactory.create(fraternity_name=other_school_frat.title,
+                                 school_title=other_school_frat.school.title)
+
+
+@pytest.fixture
 def preuser2(db):
     """A preuser for the tests."""
     return PreuserFactory.create()
@@ -76,6 +83,13 @@ def pres_pre(db, frat):
 def other_pres_pre(db, other_frat):
     return PreuserFactory.create(chapter_admin=True,
                                  fraternity_name=other_frat.title)
+
+
+@pytest.fixture
+def other_school_pres_pre(db, other_school_frat):
+    return PreuserFactory.create(chapter_admin=True,
+                                 fraternity_name=other_school_frat.title,
+                                 school_title=other_school_frat.school.title)
 
 
 @pytest.fixture
@@ -101,6 +115,19 @@ def frat(db, school):
 def other_frat(db, school):
     """Another fraternity for tests."""
     return FratFactory.create(title='Zeta Psi', school_id=school.id)
+
+
+@pytest.fixture
+def other_school_frat(db, other_school):
+    """A fraternity from another school."""
+    return FratFactory.create(title='Sigma Sigma Omega',
+                              school_id=other_school.id)
+
+
+@pytest.fixture
+def other_school_user(db, other_school_pre):
+    """A user from another school."""
+    return UserFactory.create(email=other_school_pre.email)
 
 
 @pytest.fixture
@@ -140,6 +167,15 @@ def admin(db, admin_preuser, frat, admin_role):
 
 
 @pytest.fixture
+def site_admin(db, admin_preuser, frat, admin_role):
+    """A site admin to imitate total permissions."""
+    admin = UserFactory.create(email=admin_preuser.email)
+    admin.is_admin = True
+    admin.save()
+    return admin
+
+
+@pytest.fixture
 def president(db, pres_pre, frat, pres_role):
     """A chapter president for the tests."""
     return UserFactory(email=pres_pre.email)
@@ -149,6 +185,12 @@ def president(db, pres_pre, frat, pres_role):
 def other_pres(db, other_pres_pre, other_frat, pres_role):
     """A president of another chapter for the tests."""
     return UserFactory.create(email=other_pres_pre.email)
+
+
+@pytest.fixture
+def other_school_pres(db, other_school_pres_pre, pres_role):
+    """A president from another school."""
+    return UserFactory.create(email=other_school_pres_pre.email)
 
 
 @pytest.fixture
@@ -163,6 +205,14 @@ def other_party(db, other_frat, other_pres):
     """A party from another frat."""
     return PartyFactory.create(fraternity=other_frat,
                                creator=other_pres)
+
+
+@pytest.fixture
+def other_school_party(db, other_school_frat, other_school_pres):
+    """A party from another school."""
+    return PartyFactory.create(
+        name='Party from: {}'.format(other_school_frat.school.title),
+        fraternity=other_school_frat, creator=other_school_pres)
 
 
 @pytest.fixture

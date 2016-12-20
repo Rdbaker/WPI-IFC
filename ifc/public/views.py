@@ -11,7 +11,7 @@ from ifc.public.forms import LoginForm
 from ifc.user.forms import RegisterForm
 from ifc.user.models import User
 from ifc.party.models import Fraternity
-from ifc.utils import flash_errors
+from ifc.utils import flash_errors, permission_required
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 
@@ -78,7 +78,7 @@ def status():
 
 
 @blueprint.route('/change-frat/<int:frat_id>')
-@login_required
+@permission_required('is_admin')
 def change_fraternity(frat_id):
     """Change the user's fraternity, but only if they're an admin."""
     if not current_user.is_admin:

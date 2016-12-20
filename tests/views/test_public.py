@@ -153,6 +153,81 @@ class TestHome(BaseViewTest):
         assert 'loginForm' not in res.forms
 
 
+class TestNavbar(BaseViewTest):
+    """Test the things in the navbar."""
+    def test_admin_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' not in res
+
+    def test_admin_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' in res
+
+    def test_admin_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/admin/"' in res
+
+    def test_ingest_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' not in res
+
+    def test_ingest_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' in res
+
+    def test_ingest_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/ingest/"' in res
+
+    def test_change_frat_button_no_login(self, frat, testapp):
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_user(self, user, testapp):
+        self.login(user, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_pres(self, president, testapp):
+        self.login(president, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_admin(self, admin, testapp):
+        self.login(admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' not in res
+
+    def test_change_frat_button_as_site_admin(self, site_admin, testapp):
+        self.login(site_admin, testapp)
+        res = testapp.get('/')
+        assert 'href="/change-frat/' in res
+
+
 class TestLogout(BaseViewTest):
     """Test the logout view."""
 
@@ -228,6 +303,34 @@ class TestStatus:
         # NOTE: don't import the version and render it here, this process of
         # bumping the version should be very much on purpose
         assert res.json['version'] == '1.0.2'
+
+
+class TestChangeFrat(BaseViewTest):
+    """Tests the /change-frat/<id> endpoint."""
+
+    def test_not_logged_in(self, testapp, frat):
+        """Test that a not logged in user gets a 401."""
+        res = testapp.get('/change-frat/1', status=401)
+        assert res.status_code == 401
+
+    def test_not_site_admin(self, testapp, admin):
+        """Test that a non-site-admin gets a 403."""
+        self.login(admin, testapp)
+        res = testapp.get('/change-frat/1', status=403)
+        assert res.status_code == 403
+
+    def test_frat_not_found(self, testapp, site_admin):
+        """Test that a fraternity that isn't found raises a 404."""
+        self.login(site_admin, testapp)
+        res = testapp.get('/change-frat/20', status=404)
+        assert res.status_code == 404
+
+    def test_successful_update(self, testapp, site_admin, other_frat):
+        self.login(site_admin, testapp)
+        assert site_admin.fraternity_id != other_frat.id
+        res = testapp.get('/change-frat/{}'.format(other_frat.id)).follow()
+        assert res.status_code == 200
+        assert site_admin.fraternity_id == other_frat.id
 
 
 class VersionTest(unittest.TestCase):
