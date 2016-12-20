@@ -16,12 +16,13 @@ class BaseFactory(SQLAlchemyModelFactory):
 
         abstract = True
         sqlalchemy_session = db.session
+        force_flush = True
 
 
 class UserFactory(BaseFactory):
     """User factory."""
 
-    username = Sequence(lambda n: 'user{0}'.format(n))
+    email = Sequence(lambda n: 'user{0}@test.com'.format(n))
     password = PostGenerationMethodCall('set_password', 'example')
     active = True
 
@@ -34,10 +35,11 @@ class UserFactory(BaseFactory):
 class PreuserFactory(BaseFactory):
     """Preuser factory."""
 
-    username = Sequence(lambda n: 'user{0}'.format(n))
+    email = Sequence(lambda n: 'user{0}@test.com'.format(n))
     first_name = Sequence(lambda n: 'first_name_{0}'.format(n))
     last_name = Sequence(lambda n: 'last_name_{0}'.format(n))
     fraternity_name = 'Sigma Pi'
+    school_title = 'Worcester Polytechnic Institute'
 
     class Meta:
         """Factory configuration."""

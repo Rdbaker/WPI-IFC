@@ -2,7 +2,6 @@
 """The module containing all models in the app"""
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
-from sqlalchemy import func
 from werkzeug.exceptions import Unauthorized
 
 from ifc.school.models import School  # noqa
@@ -12,6 +11,10 @@ from ifc.party.models import Fraternity, Party, Guest  # noqa
 
 
 class AdminModelView(ModelView):
+
+    @property
+    def simple_list_pager(self):
+        return not current_user.is_admin
 
     @staticmethod
     def _is_accessible():
@@ -34,9 +37,6 @@ class AdminModelView(ModelView):
         """Return the school ID of the current user."""
         return current_user.fraternity.school_id
 
-    def get_count_query(self):
-        return self.query().session.query(func.count('*'))
-
     def get_query(self, bypass=False):
         """This method is an override from the base class. It should return a
         query that is filtered to only show the current user's school."""
@@ -48,7 +48,7 @@ class AdminModelView(ModelView):
 
 class UserModelView(AdminModelView):
     column_exclude_list = ['password', 'is_admin']
-    column_searchable_list = ['username', 'first_name', 'last_name']
+    column_searchable_list = ['email', 'first_name', 'last_name']
     form_excluded_columns = ['password', 'is_admin']
 
     @property
@@ -74,7 +74,7 @@ class FraternityModelView(AdminModelView):
 
 class PreuserModelView(AdminModelView):
     column_exclude_list = ['school_title']
-    column_searchable_list = ['username', 'first_name', 'last_name']
+    column_searchable_list = ['email', 'first_name', 'last_name']
     can_delete = False
     can_edit = False
 

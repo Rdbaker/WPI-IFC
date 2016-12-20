@@ -15,7 +15,7 @@ from tests.utils import BaseViewTest
 
 class TestPartyListView(BaseViewTest):
     """Test the /parties/ endpoint."""
-    def test_parties_without_login(self, testapp):
+    def test_parties_without_login(self, frat, testapp):
         res = testapp.get('/parties/', status=401)
         assert res.status_code == 401
 
@@ -62,7 +62,7 @@ class TestPartyListView(BaseViewTest):
 class TestNewpartyView(BaseViewTest):
     """Test the /parties/new endpoint."""
 
-    def test_new_without_login(self, testapp):
+    def test_new_without_login(self, frat, testapp):
         res = testapp.get('/parties/new', status=401)
         assert res.status_code == 401
 
@@ -94,7 +94,7 @@ class TestCreatepartyView(BaseViewTest):
         create_form['date'] = dt
         return create_form
 
-    def test_create_without_login(self, testapp):
+    def test_create_without_login(self, frat, testapp):
         res = testapp.post('/parties/new', status=401)
         assert res.status_code == 401
 
@@ -141,7 +141,7 @@ class TestCreatepartyView(BaseViewTest):
 
 
 class TestSinglePartyView(BaseViewTest):
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.get('/parties/4', status=401)
         assert res.status_code == 401
 
@@ -189,7 +189,7 @@ class TestSinglePartyView(BaseViewTest):
 
 class TestReportView(BaseViewTest):
     """Tests the /parties/id/report endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.get('/parties/4/report', status=401)
         assert res.status_code == 401
 
@@ -229,7 +229,7 @@ class TestPartyEndStartView(BaseViewTest):
     endpoints = ['/parties/{}/start', '/parties/{}/end']
 
     @pytest.mark.parametrize('endpoint', endpoints)
-    def test_no_login(self, endpoint, testapp):
+    def test_no_login(self, endpoint, frat, testapp):
         res = testapp.post(endpoint.format(4), status=401)
         assert res.status_code == 401
 
@@ -295,7 +295,7 @@ class TestPartyEndStartView(BaseViewTest):
 
 class TestDeletePartyView(BaseViewTest):
     """Test the [DELETE] /parties/id endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.delete('/parties/1', status=401)
         assert res.status_code == 401
 
@@ -338,7 +338,7 @@ class TestDeletePartyView(BaseViewTest):
 
 class TestGuestListView(BaseViewTest):
     """Tests the /parties/id/guests endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.get('/parties/1/guests', status=401)
         assert res.status_code == 401
 
@@ -398,7 +398,7 @@ class TestGuestListView(BaseViewTest):
 
 class TestMenGuestListView(BaseViewTest):
     """Tests the /parties/id/guests/males endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.get('/parties/1/guests/males', status=401)
         assert res.status_code == 401
 
@@ -452,7 +452,7 @@ class TestMenGuestListView(BaseViewTest):
 
 class TestWomenGuestListView(BaseViewTest):
     """Tests the /parties/id/guests/females endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.get('/parties/1/guests/females', status=401)
         assert res.status_code == 401
 
@@ -506,7 +506,7 @@ class TestWomenGuestListView(BaseViewTest):
 
 class TestDeleteGuestView(BaseViewTest):
     """Tests the [DELETE] /parties/id/guests/guest_id endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.delete('/parties/1/guests/1', status=401)
         assert res.status_code == 401
 
@@ -554,7 +554,7 @@ class TestDeleteGuestView(BaseViewTest):
 
 class TestGuestCreateView(BaseViewTest):
     """Tests [POST] /parties/id/guests endpoint."""
-    def test_no_login(self, testapp):
+    def test_no_login(self, frat, testapp):
         res = testapp.post('/parties/1/guests', status=401)
         assert res.status_code == 401
 
@@ -649,7 +649,7 @@ class TestGuestCheckinView(BaseViewTest):
     methods = ['put', 'patch']
 
     @pytest.mark.parametrize('method_name', methods)
-    def test_no_login(self, method_name, testapp):
+    def test_no_login(self, method_name, frat, testapp):
         res = getattr(testapp, method_name)('/parties/1/guests/1', status=401)
         assert res.status_code == 401
 

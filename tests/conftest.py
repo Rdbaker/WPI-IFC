@@ -64,14 +64,12 @@ def preuser2(db):
 
 @pytest.fixture
 def admin_preuser(db, frat):
-    return PreuserFactory.create(ifc_admin=True,
-                                 fraternity_name=frat.title)
+    return PreuserFactory.create(ifc_admin=True)
 
 
 @pytest.fixture
 def pres_pre(db, frat):
-    return PreuserFactory.create(chapter_admin=True,
-                                 fraternity_name=frat.title)
+    return PreuserFactory.create(chapter_admin=True)
 
 
 @pytest.fixture
@@ -102,8 +100,7 @@ def frat(db, school):
 @pytest.fixture
 def other_frat(db, school):
     """Another fraternity for tests."""
-    return FratFactory.create(title='Zeta Psi', school=school,
-                              school_id=school.id)
+    return FratFactory.create(title='Zeta Psi', school_id=school.id)
 
 
 @pytest.fixture
@@ -127,31 +124,31 @@ def admin_role(db):
 @pytest.fixture
 def user(db, preuser, frat, role):
     """A user for the tests."""
-    return UserFactory.create(username=preuser.username)
+    return UserFactory.create(email=preuser.email)
 
 
 @pytest.fixture
 def other_user(db, other_preuser, other_frat, role):
     """Another fraternity for tests."""
-    return UserFactory.create(username=other_preuser.username)
+    return UserFactory.create(email=other_preuser.email)
 
 
 @pytest.fixture
 def admin(db, admin_preuser, frat, admin_role):
     """An admin for the tests."""
-    return UserFactory.create(username=admin_preuser.username)
+    return UserFactory.create(email=admin_preuser.email)
 
 
 @pytest.fixture
 def president(db, pres_pre, frat, pres_role):
     """A chapter president for the tests."""
-    return UserFactory(username=pres_pre.username)
+    return UserFactory(email=pres_pre.email)
 
 
 @pytest.fixture
 def other_pres(db, other_pres_pre, other_frat, pres_role):
     """A president of another chapter for the tests."""
-    return UserFactory.create(username=other_pres_pre.username)
+    return UserFactory.create(email=other_pres_pre.email)
 
 
 @pytest.fixture

@@ -11,7 +11,7 @@ from ifc.user.models import User
 class LoginForm(Form):
     """Login form."""
 
-    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
@@ -25,9 +25,9 @@ class LoginForm(Form):
         if not initial_validation:
             return False
 
-        self.user = User.query.filter_by(username=self.username.data).first()
+        self.user = User.query.filter_by(email=self.email.data).first()
         if not self.user:
-            self.username.errors.append(locales.Error.UNKNOWN_USERNAME)
+            self.email.errors.append(locales.Error.UNKNOWN_EMAIL)
             return False
 
         if not self.user.check_password(self.password.data):
@@ -35,6 +35,6 @@ class LoginForm(Form):
             return False
 
         if not self.user.active:
-            self.username.errors.append(locales.Error.USER_INACTIVE)
+            self.email.errors.append(locales.Error.USER_INACTIVE)
             return False
         return True

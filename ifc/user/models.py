@@ -41,7 +41,6 @@ class User(UserMixin, SurrogatePK, Model):
 
     __tablename__ = 'users'
     email = Column(db.String(100), unique=True, nullable=False)
-    username = Column(db.String(80), nullable=False)
     #: The hashed password
     password = Column(db.String(128), nullable=True)
     first_name = Column(db.String(30), nullable=True)
@@ -103,9 +102,8 @@ class User(UserMixin, SurrogatePK, Model):
 
     def resolve_frat_from_preuser(self, pre):
         """Finds the fraternity from the preregistered-user model."""
-        return Fraternity.query.filter(
-            Fraternity.title == pre.fraternity_name,
-            Fraternity.school.title == pre.school_title).first()
+        return Fraternity.query.filter_by(title=pre.fraternity_name)\
+            .join(Fraternity.school).filter_by(title=pre.school_title).first()
 
     @property
     def full_name(self):

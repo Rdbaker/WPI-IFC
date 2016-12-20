@@ -29,7 +29,6 @@ class TestAdminViews(BaseViewTest):
     def test_admin_endpoints_inaccessible_to_user(self, endpoint, user,
                                                   testapp):
         self.login(user, testapp)
-        print(user.role)
         res = testapp.get(endpoint, status=401)
         assert res.status_code == 401
 
@@ -37,6 +36,5 @@ class TestAdminViews(BaseViewTest):
     def test_admin_endpoints_inaccessible_to_pres(self, endpoint, president,
                                                   testapp):
         self.login(president, testapp)
-        print(president.role)
         res = testapp.get(endpoint, status=401)
         assert res.status_code == 401

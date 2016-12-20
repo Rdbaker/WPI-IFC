@@ -53,7 +53,7 @@ def register():
     """Register new user."""
     form = RegisterForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
-        User.create(username=form.username.data, password=form.password.data,
+        User.create(email=form.email.data, password=form.password.data,
                     active=True)
         flash(locales.Success.REGISTER_SUCCESS, 'success')
         return redirect(url_for('public.home'))

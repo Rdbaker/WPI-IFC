@@ -19,7 +19,7 @@ class TestUser:
 
     def test_factory(self, db, user):
         """Test user factory."""
-        assert bool(user.username)
+        assert bool(user.email)
         assert user.active is True
         assert user.check_password('example')
 

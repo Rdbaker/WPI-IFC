@@ -16,11 +16,11 @@ class Error(object):
     CANT_EDIT_GUESTS = "You can't edit the guests of this party"
     GUEST_REQUIRED_FIELDS = "name and is_male are required fields."
     GUEST_ALREADY_ON_LIST = 'That guest is already on this party list'
-    UNKNOWN_USERNAME = 'Unknown username'
+    UNKNOWN_EMAIL = 'Unknown email'
     INVALID_PW = 'Invalid password'
     USER_INACTIVE = 'User not activated'
     BAD_PW_VERIFICATION = 'Passwords must match'
-    USERNAME_TAKEN = 'Username already registered'
+    EMAIL_TAKEN = 'Email already registered'
     INVALID_ROLE = 'Invalid role title'
 
 
@@ -36,7 +36,7 @@ class Success(object):
 
 
 class FormConstants(object):
-    USERNAME = 'Username'
+    EMAIL = 'Email'
     PASSWORD = 'Password'
     VERIFY_PW = 'Verify password'
     PARTY_NAME = 'Party Name'
