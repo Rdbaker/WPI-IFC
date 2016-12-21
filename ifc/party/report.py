@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Report logic class."""
+import collections
 import datetime
 
 from cached_property import cached_property
@@ -62,7 +63,7 @@ class Report(object):
         return rate
 
     @cached_property
-    def population_buckets(self, ):
+    def population_buckets(self):
         """Returns a data structure of bucketed population on the granularity
         of 10 minutes.
 
@@ -133,3 +134,48 @@ class Report(object):
             first_bucket += bucket_delta
 
         return buckets
+
+    @cached_property
+    def attendance_ratio(self):
+        """Calculate the ratio of girls who showed up to guys who showed up.
+
+        :return dict: The response will be a dict shaped like this:
+            {'women': 1.252,
+             'men': 1.0}
+            representing the ratio of men to women in attendance of the party.
+        """
+        female_attended = len([g for g in self.party.female_guests
+                               if g.entered_party_at is not None])
+        male_attended = len([g for g in self.party.male_guests
+                             if g.entered_party_at is not None])
+        return {'men': 1.0,
+                'female': float(female_attended)/float(male_attended)}
+
+    @cached_property
+    def host_attendance_raw(self):
+        """Calculate who got the most people to show up. Does not take in to
+        account the number of people they put on the list, just the number of
+        guests under their name who showed up.
+
+        :return [tuple]: a list of tuples that each have two elements: a full
+            name of a brother and the number of guests that checked in to the
+            party that were under their name. E.g. [('Ryan Baker', 201), ...]
+        """
+        return collections.Counter([g.host.full_name
+                                    for g in self.party.guests
+                                    if g.entered_party_at is not None]).items()
+
+    @cached_property
+    def host_attendance_normalized(self):
+        """Calculate the ratio of <guests added>:<guests attended> per host.
+
+        :return [tuple]: a list of tuples that each have two elements: a full
+            name of a brother and the ratio of guests they added to the list
+            versus guests that were checked in to the party.
+        """
+        return [
+            (t[0],
+             float(t[1]) /
+             len(filter(lambda g: g.host.full_name == t[0], self.party.guests)))
+            for t in self.host_attendance_raw
+        ]

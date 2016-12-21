@@ -64,7 +64,10 @@ def guest_list(party_id):
 def report(party_id):
     report = Report(g.party)
     return jsonify(attendance=report.attendance,
-                   population=report.population_buckets)
+                   population=report.population_buckets,
+                   attendance_ratio=report.attendance_ratio,
+                   host_attendance_raw=report.host_attendance_raw,
+                   host_attendance_normalized=report.host_attendance_normalized)
 
 
 @blueprint.route('/<int:party_id>/start', methods=['POST'])
