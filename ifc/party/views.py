@@ -9,6 +9,7 @@ from sqlalchemy.exc import IntegrityError
 
 from . import forms
 from .models import Party, Guest
+from .report import Report
 from ifc import locales
 from ifc.utils import flash_errors, InvalidAPIUsage, permission_required
 
@@ -61,7 +62,9 @@ def guest_list(party_id):
 @blueprint.route('/<int:party_id>/report', methods=['GET'])
 @permission_required('can_view_party_by_id', apply_req_args=True)
 def report(party_id):
-    return render_template('report/index.html', party=g.party)
+    report = Report(g.party)
+    return jsonify(attendance=report.attendance,
+                   population=report.population_buckets)
 
 
 @blueprint.route('/<int:party_id>/start', methods=['POST'])
@@ -94,11 +97,14 @@ def delete_party(party_id):
                                       payload={'error':
                                                locales.Error.CANT_SEE_GUESTS}))
 def get_guest_list(party_id):
-    is_male = request.args.get('is_male', 'true').lower()
-    if is_male == 'true':
-        guests = g.party.male_guests
+    if 'is_male' in request.args:
+        is_male = request.args.get('is_male', 'true').lower()
+        if is_male == 'true':
+            guests = g.party.male_guests
+        else:
+            guests = g.party.female_guests
     else:
-        guests = g.party.female_guests
+        guests = g.party.guests
     return jsonify(guests=[gu.json_dict for gu in guests])
 
 
