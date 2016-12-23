@@ -1,0 +1,28 @@
+.chart-rect {
+  border: 4px solid #e2e2e2;
+  border-radius: 10px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.chart-title {
+  border-bottom: solid #9c9c9c 2px;
+  padding-bottom: 15px;
+}
+
+.chart-footer {
+  border-top: solid #9c9c9c 2px;
+  padding-bottom: 10px;
+}
+
+#population-footer {
+  min-height: 80px;
+}
+
+#population-footer > div {
+  line-height: 5;
+}
+
+#population-container {
+  margin-top: 40px;
+}

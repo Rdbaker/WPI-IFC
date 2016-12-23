@@ -33,6 +33,11 @@ class Report(object):
         self.party = party
 
     @cached_property
+    def total_guests(self):
+        """Return a simple count of the guests."""
+        return len(self.party.guests)
+
+    @cached_property
     def attendance(self):
         """Return the attendance of the party as a percentage of the number of
         guests who showed up to the party.
@@ -56,6 +61,10 @@ class Report(object):
             (guests who were checked in) / (total guests)
         """
         guests = self.party.guests
+
+        if not guests:
+            return 0.0
+
         rate = (float(len([g
                            for g in guests
                            if g.entered_party_at is not None])) /
@@ -81,6 +90,11 @@ class Report(object):
             ]
         """
         minute_bucket_interval = 10
+        guests = self.party.guests
+
+        # if there are no guests, just return
+        if not guests:
+            return []
 
         def round_down_from_interval(dt):
             """Given some datetime object, round it down (in minutes) to the
@@ -112,13 +126,16 @@ class Report(object):
                         in_attendance += 1
             return in_attendance
 
-        guests = self.party.guests
         enter_times = sorted([g.entered_party_at
                               for g in guests
                               if g.entered_party_at is not None])
         left_times = sorted([g.left_party_at
                              for g in guests
                              if g.left_party_at is not None])
+
+        if not enter_times or not left_times:
+            return []
+
         first_bucket = round_down_from_interval(enter_times[0])
         last_bucket = round_down_from_interval(left_times[-1])
 
@@ -148,8 +165,11 @@ class Report(object):
                                if g.entered_party_at is not None])
         male_attended = len([g for g in self.party.male_guests
                              if g.entered_party_at is not None])
+        if not male_attended:
+            return {'men': 1.0, 'women': 1.0}
+
         return {'men': 1.0,
-                'female': float(female_attended)/float(male_attended)}
+                'women': float(female_attended)/float(male_attended)}
 
     @cached_property
     def host_attendance_raw(self):

@@ -16,6 +16,7 @@ js = Bundle(
     'libs/jQuery/dist/jquery.min.js',
     'libs/bootstrap/dist/js/bootstrap.min.js',
     'libs/noty/js/noty/packaged/jquery.noty.packaged.js',
+    'libs/d3/d3.min.js',
     'js/version_update.js',
     filters='jsmin',
     output='public/js/compiled/common.js'
@@ -42,6 +43,11 @@ report_coffee = Bundle(
     filters=['coffeescript', 'jsmin']
 )
 
+report_css = Bundle(
+    'css/report.css',
+    output='public/css/compiled/report.css'
+)
+
 
 assets = Environment()
 
@@ -50,3 +56,4 @@ assets.register('guest_list_js', guest_list_js)
 assets.register('css_all', css)
 assets.register('guest_list_css', guest_list_css)
 assets.register('report_coffee', report_coffee)
+assets.register('report_css', report_css)

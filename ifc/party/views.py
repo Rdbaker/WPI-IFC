@@ -61,9 +61,16 @@ def guest_list(party_id):
 
 @blueprint.route('/<int:party_id>/report', methods=['GET'])
 @permission_required('can_view_party_by_id', apply_req_args=True)
-def report(party_id):
+def show_report(party_id):
+    return render_template('report/index.html', party=g.party)
+
+
+@blueprint.route('/<int:party_id>/report/data', methods=['GET'])
+@permission_required('can_view_party_by_id', apply_req_args=True)
+def report_data(party_id):
     report = Report(g.party)
     return jsonify(attendance=report.attendance,
+                   total_guests=report.total_guests,
                    population=report.population_buckets,
                    attendance_ratio=report.attendance_ratio,
                    host_attendance_raw=report.host_attendance_raw,
