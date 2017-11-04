@@ -39,6 +39,29 @@ def home():
     return render_template('public/home.html', form=form)
 
 
+@blueprint.route('/help-login/', methods=['GET', 'POST'])
+def help_me_login():
+    """Help the user create a new account."""
+    form = RegisterForm(request.form, csrf_enabled=False)
+    if form.validate_on_submit():
+        user = User.create(email=form.email.data, password=form.password.data,
+                           active=True)
+        login_user(user)
+        flash(locales.Success.REGISTER_SUCCESS, 'success')
+        return redirect(url_for('parties.parties'))
+    else:
+        flash_errors(form)
+    return render_template('public/register.html', form=form)
+
+
+@blueprint.route('/logout-and-help/')
+def logout_and_help():
+    """Log the user out and help them make an account."""
+    logout_user()
+    flash(locales.Success.LOGOUT_SUCCESS, 'info')
+    return redirect(url_for('public.help_me_login'))
+
+
 @blueprint.route('/logout/')
 @login_required
 def logout():
@@ -53,10 +76,11 @@ def register():
     """Register new user."""
     form = RegisterForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
-        User.create(email=form.email.data, password=form.password.data,
-                    active=True)
+        user = User.create(email=form.email.data, password=form.password.data,
+                           active=True)
+        login_user(user)
         flash(locales.Success.REGISTER_SUCCESS, 'success')
-        return redirect(url_for('public.home'))
+        return redirect(url_for('parties.parties'))
     else:
         flash_errors(form)
     return render_template('public/register.html', form=form)

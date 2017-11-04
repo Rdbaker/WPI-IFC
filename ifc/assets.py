@@ -18,6 +18,7 @@ js = Bundle(
     'libs/noty/js/noty/packaged/jquery.noty.packaged.js',
     'libs/d3/d3.min.js',
     'js/version_update.js',
+    'js/drift_identify.js',
     filters='jsmin',
     output='public/js/compiled/common.js'
 )
