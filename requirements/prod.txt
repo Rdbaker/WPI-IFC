@@ -11,7 +11,7 @@ itsdangerous==0.24
 
 # Database
 Flask-SQLAlchemy==2.1
-psycopg2==2.6.1
+psycopg2==2.7
 SQLAlchemy==1.0.12
 
 # Migrations
