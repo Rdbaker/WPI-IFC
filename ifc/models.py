@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""The module containing all models in the app"""
+"""The module containing all models in the app."""
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from werkzeug.exceptions import NotFound
@@ -8,6 +8,7 @@ from ifc.school.models import School  # noqa
 from ifc.admin.models import Preuser  # noqa
 from ifc.user.models import Role, User  # noqa
 from ifc.party.models import Fraternity, Party, Guest  # noqa
+from ifc.manage.models import Capacity  # noqa
 
 
 class AdminModelView(ModelView):

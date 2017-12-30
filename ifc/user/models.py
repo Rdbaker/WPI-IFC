@@ -53,6 +53,9 @@ class User(UserMixin, SurrogatePK, Model):
     fraternity_id = reference_col('fraternities', nullable=False)
     fraternity = relationship('Fraternity')
 
+    capacity_id = reference_col('capacities', nullable=True)
+    party_capacity = relationship('Capacity')
+
     parties = relationship('Party', cascade='delete', single_parent=True)
 
     def __init__(self, email, password=None, **kwargs):
@@ -158,6 +161,22 @@ class User(UserMixin, SurrogatePK, Model):
             flask.g.guest = guest
         flask.g.party = party
         return self.can_view_party(party)
+
+    def can_manage_brother_by_id(self, brother_id):
+        """True if the user can manage the brother."""
+        brother = User.find_or_404(brother_id)
+        flask.g.brother = brother
+        return self
+
+    def can_manage_brother(self, brother):
+        """True if the user can manage the brother."""
+        return self.fraternity_id == brother.fraternity_id and \
+            (self.is_admin or self.is_chapter_admin or self.is_site_admin)
+
+    @property
+    def can_manage_fraternity(self):
+        """True if the user is an admin of any kind."""
+        return self.is_admin or self.is_site_admin or self.is_chapter_admin
 
     def can_view_party(self, party):
         """True if the user can view the guest list of a party"""

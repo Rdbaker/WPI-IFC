@@ -7,7 +7,7 @@ from flask_admin import Admin
 from flask_sslify import SSLify
 
 import ifc.models as models
-from ifc import public, user, party, ingest
+from ifc import public, user, party, ingest, manage
 from ifc.assets import assets
 from ifc.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, \
     login_manager, migrate
@@ -56,6 +56,7 @@ def register_blueprints(app):
     app.register_blueprint(user.views.blueprint)
     app.register_blueprint(party.views.blueprint)
     app.register_blueprint(ingest.views.blueprint)
+    app.register_blueprint(manage.views.blueprint)
     return None
 
 
