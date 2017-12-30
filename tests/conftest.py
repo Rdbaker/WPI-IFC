@@ -9,7 +9,7 @@ from ifc.database import db as _db
 from ifc.settings import TestConfig
 
 from .factories import UserFactory, PreuserFactory, RoleFactory, FratFactory, \
-    PartyFactory, GuestFactory, SchoolFactory
+    PartyFactory, GuestFactory, SchoolFactory, CapacityFactory
 
 
 @pytest.yield_fixture(scope='function')
@@ -161,6 +161,12 @@ def other_user(db, other_preuser, other_frat, role):
 
 
 @pytest.fixture
+def user_with_capacity(db, preuser, frat, role, capacity):
+    """A user with a capacity for the tests."""
+    return UserFactory.create(email=preuser.email, capacity=capacity)
+
+
+@pytest.fixture
 def admin(db, admin_preuser, frat, admin_role):
     """An admin for the tests."""
     return UserFactory.create(email=admin_preuser.email)
@@ -232,3 +238,8 @@ def other_guest(db, other_user, other_party):
                                party=other_party,
                                is_male=False,
                                party_id=other_party.id)
+
+@pytest.fixture
+def capacity(db):
+    """A capacity for the tests."""
+    return CapacityFactory.create()

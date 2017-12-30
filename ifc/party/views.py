@@ -163,6 +163,25 @@ def add_guest(party_id):
                               payload={'error':
                                        locales.Error.PARTY_ENDED_ADD_GUEST})
     try:
+        capacity = current_user.party_capacity
+        if capacity is not None:
+            is_male = request.json['is_male']
+            guest_count = Guest.query.filter_by(
+                host=current_user,
+                party=g.party,
+                is_male=is_male).count()
+            if is_male and capacity.male_max is not None and \
+                    guest_count >= capacity.male_max:
+                raise InvalidAPIUsage(
+                    payload={'error':
+                             'You can only add {} guys to the party'.format(
+                                 capacity.male_max)})
+            elif not is_male and capacity.female_max is not None and \
+                    guest_count >= capacity.female_max:
+                raise InvalidAPIUsage(
+                    payload={'error':
+                             'You can only add {} girls to the party'.format(
+                                 capacity.female_max)})
         guest = Guest.create(name=request.json['name'].lower(),
                              host=current_user,
                              party=g.party,

@@ -5,7 +5,8 @@ from factory import PostGenerationMethodCall, Sequence
 from factory.alchemy import SQLAlchemyModelFactory
 
 from ifc.database import db
-from ifc.models import User, Preuser, Role, Fraternity, Party, Guest, School
+from ifc.models import User, Preuser, Role, Fraternity, Party, Guest, School, \
+    Capacity
 
 
 class BaseFactory(SQLAlchemyModelFactory):
@@ -86,3 +87,11 @@ class SchoolFactory(BaseFactory):
 
     class Meta:
         model = School
+
+
+class CapacityFactory(BaseFactory):
+    male_max = 1
+    female_max = 1
+
+    class Meta:
+        model = Capacity
