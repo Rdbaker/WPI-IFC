@@ -243,6 +243,23 @@ class Report(object):
         return buckets
 
     @cached_property
+    def attendance_raw(self):
+        return {
+            'girls_who_showed': len([g for g in self.party.guests
+                                     if g.entered_party_at is not None
+                                     and not g.is_male]),
+            'guys_who_showed': len([g for g in self.party.guests
+                                    if g.entered_party_at is not None
+                                    and g.is_male]),
+            'girls_who_didnt_show': len([g for g in self.party.guests
+                                         if g.entered_party_at is None
+                                         and not g.is_male]),
+            'guys_who_didnt_show': len([g for g in self.party.guests
+                                        if g.entered_party_at is None
+                                        and g.is_male]),
+        }
+
+    @cached_property
     def attendance_ratio(self):
         """Calculate the ratio of girls who showed up to guys who showed up.
 

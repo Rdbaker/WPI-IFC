@@ -1,46 +1,5 @@
-successColorHex = "#5cb85c"
-dangerColorHex = '#d9534f'
-
-
-showAttendance = (data) ->
-  startAngleOffset = Math.PI
-
-  arcGen = d3.arc()
-    .outerRadius 150
-    .innerRadius 90
-    .startAngle startAngleOffset
-
-  container = d3.select('#attendance')
-  container.select('.loading').remove()
-
-  svg = container.append('svg')
-    .attr 'width', 400
-    .attr 'height', 400
-
-  group = svg.append('g')
-    .attr "transform", "translate(200,200)"
-
-  # draw the red arc
-  group.append('path')
-    .attr 'd', arcGen.endAngle startAngleOffset + 2 * Math.PI
-    .attr 'class', 'attendanceArc'
-    .attr 'fill', dangerColorHex
-    .attr 'stroke', 'black'
-
-  # draw the green arc
-  group.append('path')
-    .attr 'd', arcGen.endAngle startAngleOffset + (Math.PI * 2 * data.attendance)
-    .attr 'class', 'attendanceArc'
-    .attr 'fill', successColorHex
-    .attr 'stroke', 'black'
-
-  group.append('text')
-    .attr 'transform', 'translate(-40, 15)'
-    .attr 'font-size', '3.1em'
-    .text "#{Math.floor(data.attendance * 100)}%"
-
+showTotalAttendance = (data) ->
   document.getElementById('attendance-total').innerText = data.total_guests
-
 
 showHostGuestAttendance = (data) ->
   hostData = {}
@@ -118,77 +77,24 @@ showHostGuestAttendance = (data) ->
   attendanceTable.appendChild(makeTable())
   makePages()
 
-'''
-showPopulationChart = (data) ->
-  updatePopulationFooter = (datum) ->
-    timeElt = document.getElementById('pop-time')
-    guestElt = document.getElementById('pop-guests')
-    timeString = (new Date(datum.time)).toLocaleTimeString()
-    timeElt.innerText = timeString
-    guestElt.innerText = datum.population
 
-  container = d3.select('#population-chart')
-  container.select('.loading').remove()
+showAttendanceNew = (data) =>
+  ctx = document.getElementById('rawAttendance')
 
-  svg = container.append('svg')
-    .attr 'width', 800
-    .attr 'height', 400
-    .attr 'class', 'pop-chart'
+  showed_up = data.attendance_raw
 
-  maxYVal = Math.ceil(d3.max(data.population, (d) ->
-    d.population) * 1.3)
-  y = d3.scaleLinear()
-    .domain [0, maxYVal]
-    .range [400, 0]
-  x = d3.scaleLinear()
-    .domain [0, data.population.length - 1]
-    .range [0, 800]
+  new Chart(ctx, {
+    type: 'doughnut'
+    data:
+      datasets: [
+        {
+          data: Object.values(showed_up)
+          backgroundColor: ['rgb(200, 200, 0)', 'rgb(200, 0, 200)', 'rgb(0, 200, 200)', 'rgb(200, 200, 200)']
+        }
+      ],
+      labels: ['Girl No Shows', 'Lady Guests', 'Dude No Shows', 'Homies Who Came Through'],
+  })
 
-  xAxis = d3.axisBottom().scale(x)
-
-  svg.append 'g'
-    .attr 'transform', 'translate(0, 360)'
-    .call xAxis
-
-  lineFunc = d3.line()
-    .x((d, i) -> x(i))
-    .y((d) -> y(d.population))
-    .curve d3.curveBundle.beta(0.95)
-
-  svg.append 'path'
-    .attr 'd', lineFunc(data.population)
-    .attr 'stroke', 'steelblue'
-    .attr 'stroke-width', 2
-    .attr 'fill', 'none'
-
-  vertical = d3.select '.pop-chart'
-    .append 'line'
-    .attr 'stroke', '#bbb'
-    .attr 'stroke-width', '1'
-    .attr 'x1', 0
-    .attr 'x2', 0
-    .attr 'y1', 0
-    .attr 'y2', 400
-
-  d3.select(".pop-chart")
-    .on("mousemove", () ->
-      mousex = d3.mouse(this)
-      mousex = mousex[0]
-      index = Math.floor(x.invert(mousex))
-      datum = data.population[index]
-      vertical.attr 'x1', mousex
-        .attr 'x2', mousex
-      updatePopulationFooter datum
-      d3.select(this)
-        .classed("hover", true)
-        .attr("stroke", '#ddd')
-        .attr("stroke-width", "0.5px"))
-    .on("mouseenter", () ->
-      mousex = d3.mouse(this)
-      mousex = mousex[0]
-      vertical.attr 'x1', mousex
-        .attr('x2', mousex))
-'''
 
 showPopulationChart = (data) =>
   ctx = document.getElementById("myChart")
@@ -242,7 +148,8 @@ showPopulationChart = (data) =>
   })
 
 $.get('report/data').done((res) ->
-  showAttendance res
+  showTotalAttendance res
   showHostGuestAttendance res
   showPopulationChart res
+  showAttendanceNew res
 )

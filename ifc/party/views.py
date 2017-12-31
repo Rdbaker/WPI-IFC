@@ -75,6 +75,7 @@ def report_data(party_id):
                    attendance_ratio=report.attendance_ratio,
                    host_attendance_raw=report.host_attendance_raw,
                    host_attendance_normalized=report.host_attendance_normalized,
+                   attendance_raw=report.attendance_raw,
                    gender_population=report.gendered_population_buckets)
 
 
