@@ -118,7 +118,7 @@ showHostGuestAttendance = (data) ->
   attendanceTable.appendChild(makeTable())
   makePages()
 
-
+'''
 showPopulationChart = (data) ->
   updatePopulationFooter = (datum) ->
     timeElt = document.getElementById('pop-time')
@@ -188,7 +188,58 @@ showPopulationChart = (data) ->
       mousex = mousex[0]
       vertical.attr 'x1', mousex
         .attr('x2', mousex))
+'''
 
+showPopulationChart = (data) =>
+  ctx = document.getElementById("myChart")
+
+  male_population = data.gender_population.male
+  female_population = data.gender_population.female
+  buckets = data.population
+
+  max = Math.max.apply(Math, (b.population for b in buckets))
+
+  chart = new Chart(ctx, {
+    type: 'line'
+    data: {
+      labels: ((new Date(bucket.time)).toTimeString() for bucket in buckets)
+      datasets: [
+        {
+          label: 'Total'
+          data: (bucket.population for bucket in buckets)
+          fill: false
+          pointHitRadius: 15
+          borderColor: 'rgb(75, 75, 75)'
+          lineTension: 0.1
+        },
+        {
+          label: 'Guys'
+          data: (bucket.population for bucket in male_population)
+          fill: true
+          pointHitRadius: 15
+          backgroundColor: 'rgba(91, 109, 227, 0.5)'
+          borderColor: 'rgb(91, 109, 227)'
+          lineTension: 0.1
+        },
+        {
+          label: 'Girls'
+          data: (bucket.population for bucket in female_population)
+          fill: true
+          pointHitRadius: 15
+          backgroundColor: 'rgba(200, 91, 227, 0.5)'
+          borderColor: 'rgb(200, 91, 227)'
+          lineTension: 0.1
+        },
+      ]
+    }
+    options:
+      scales:
+        yAxes: [{
+          ticks:
+            max: Math.ceil(max * 1.2)
+            beginAtZero: true
+        }]
+  })
 
 $.get('report/data').done((res) ->
   showAttendance res

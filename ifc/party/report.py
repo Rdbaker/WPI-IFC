@@ -72,6 +72,96 @@ class Report(object):
         return rate
 
     @cached_property
+    def gendered_population_buckets(self):
+        minute_bucket_interval = 10
+        guests = self.party.guests
+
+        # if there are no guests, just return
+        if not guests:
+            return []
+
+        def round_down_from_interval(dt):
+            """Given some datetime object, round it down (in minutes) to the
+            nearest interval given the variable (in the scope)
+            minute_bucket_interval."""
+            return dt - datetime.timedelta(
+                minutes=dt.minute % minute_bucket_interval,
+                seconds=dt.second,
+                microseconds=dt.microsecond)
+
+        def get_population_for_bucket(dt, is_male):
+            """Given some time bucket, find the number of guests who were
+            checked in to the party at that time."""
+            in_attendance = 0
+
+            entered_before = dt + datetime.timedelta(minutes=10)
+            left_after = dt
+
+            # for each guest
+            for guest in guests:
+                # if the guest entered some point before the end of this bucket
+                if guest.entered_party_at is not None and \
+                        guest.entered_party_at <= entered_before:
+                    # if the guest left sometime after the start of this bucket
+                    # (or never left)
+                    if guest.left_party_at is None or \
+                            guest.left_party_at > left_after:
+                        # they were at the party
+                        if (is_male and guest.is_male) or \
+                                (not is_male and not guest.is_male):
+                            in_attendance += 1
+            return in_attendance
+
+        male_enter_times = sorted([g.entered_party_at
+                                   for g in guests
+                                   if g.entered_party_at is not None and
+                                   g.is_male])
+        male_left_times = sorted([g.left_party_at
+                                  for g in guests
+                                  if g.left_party_at is not None and
+                                  g.is_male])
+        female_enter_times = sorted([g.entered_party_at
+                                     for g in guests
+                                     if g.entered_party_at is not None and
+                                     not g.is_male])
+        female_left_times = sorted([g.left_party_at
+                                    for g in guests
+                                    if g.left_party_at is not None and
+                                    not g.is_male])
+
+        if (not male_enter_times or not male_left_times) and \
+                (not female_enter_times or not female_left_times):
+            return []
+
+        male_first_bucket = round_down_from_interval(male_enter_times[0])
+        male_last_bucket = round_down_from_interval(male_left_times[-1])
+        female_first_bucket = round_down_from_interval(female_enter_times[0])
+        female_last_bucket = round_down_from_interval(female_left_times[-1])
+
+        gender_buckets = {
+            'male': [],
+            'female': [],
+        }
+
+        bucket_delta = datetime.timedelta(minutes=minute_bucket_interval)
+        # initialize all the buckets from start to end
+        while male_first_bucket <= male_last_bucket:
+            gender_buckets['male'].append(
+                {'time': male_first_bucket.isoformat() + 'Z',
+                 'population': get_population_for_bucket(male_first_bucket, True)}
+            )
+            male_first_bucket += bucket_delta
+
+        while female_first_bucket <= female_last_bucket:
+            gender_buckets['female'].append(
+                {'time': female_first_bucket.isoformat() + 'Z',
+                 'population': get_population_for_bucket(female_first_bucket, False)}
+            )
+            female_first_bucket += bucket_delta
+
+        return gender_buckets
+
+    @cached_property
     def population_buckets(self):
         """Returns a data structure of bucketed population on the granularity
         of 10 minutes.
@@ -145,7 +235,7 @@ class Report(object):
         # initialize all the buckets from start to end
         while first_bucket <= last_bucket:
             buckets.append(
-                {'time': first_bucket.isoformat(),
+                {'time': first_bucket.isoformat() + 'Z',
                  'population': get_population_for_bucket(first_bucket)}
             )
             first_bucket += bucket_delta

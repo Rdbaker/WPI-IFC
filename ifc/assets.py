@@ -17,6 +17,7 @@ js = Bundle(
     'libs/bootstrap/dist/js/bootstrap.min.js',
     'libs/noty/js/noty/packaged/jquery.noty.packaged.js',
     'libs/d3/d3.min.js',
+    'libs/chart.js/dist/Chart.min.js',
     'js/version_update.js',
     'js/drift_identify.js',
     filters='jsmin',
@@ -40,6 +41,7 @@ guest_list_css = Bundle(
 
 report_coffee = Bundle(
     'coffee/reports/main.coffee',
+    'coffee/reports/newcharts.coffee',
     output='public/js/compiled/reports.js',
     filters=['coffeescript', 'jsmin']
 )

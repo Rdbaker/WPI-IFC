@@ -74,7 +74,8 @@ def report_data(party_id):
                    population=report.population_buckets,
                    attendance_ratio=report.attendance_ratio,
                    host_attendance_raw=report.host_attendance_raw,
-                   host_attendance_normalized=report.host_attendance_normalized)
+                   host_attendance_normalized=report.host_attendance_normalized,
+                   gender_population=report.gendered_population_buckets)
 
 
 @blueprint.route('/<int:party_id>/start', methods=['POST'])
