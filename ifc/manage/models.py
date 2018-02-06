@@ -12,4 +12,5 @@ class Capacity(SurrogatePK, Model):
 
     def __repr__(self):
         """Represent instance as a unique string."""
-        return '<Capacity({user_id})>'.format(user_id=self.user_id)
+        return '<Capacity(m[{}] | f[{}])>'.format(self.male_max,
+                                                  self.female_max)
